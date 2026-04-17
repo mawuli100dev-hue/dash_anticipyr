@@ -1,3 +1,5 @@
+# dash_anticipyr/ui/sidebar.py
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -7,6 +9,15 @@ import streamlit as st
 from dash_anticipyr.core.constants import PERIODES, SSP_LIST
 from dash_anticipyr.core.paths import data_cartographies_root
 from dash_anticipyr.core.raster import lister_especes
+
+
+# Couleurs SSP cohérentes avec ssp_info.py
+SSP_COULEURS = {
+    "SSP 126": "#2e7d32",
+    "SSP 245": "#f9a825",
+    "SSP 370": "#e65100",
+    "SSP 585": "#b71c1c",
+}
 
 
 def render_sidebar() -> tuple[str, str, str, str | None]:
@@ -20,10 +31,43 @@ def render_sidebar() -> tuple[str, str, str, str | None]:
       - ssp_choisi (str | None)
     """
     with st.sidebar:
-        st.header("Espèce étudiée")
+
+        # ── Logo / Titre sidebar ──────────────────────────────────────────
+        st.markdown(
+            """
+            <div style="
+                padding: 16px 8px 8px 8px;
+                margin-bottom: 4px;
+            ">
+                <p style="
+                    font-size: 1.2rem;
+                    font-weight: 700;
+                    color: #1b5e35;
+                    margin: 0;
+                    letter-spacing: 0.02em;
+                ">Flore Pyrenéenne</p>
+                <p style="
+                    font-size: 0.78rem;
+                    color: #9ca3af;
+                    margin: 2px 0 0 0;
+                ">Selectionnez une espece, une periode et un scenario</p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        st.divider()
+
+        # ── Sélection de l'espèce ─────────────────────────────────────────
+        st.markdown(
+            "<p style='font-size:0.82rem; font-weight:600; color:#374151; margin-bottom:4px;'>"
+            "Espece etudiee</p>",
+            unsafe_allow_html=True,
+        )
 
         dossier_racine_defaut = str(data_cartographies_root())
         especes = lister_especes(dossier_racine_defaut)
+
         if not especes:
             st.error(
                 "Aucune espèce trouvée.\n"
@@ -31,11 +75,9 @@ def render_sidebar() -> tuple[str, str, str, str | None]:
             )
             st.stop()
 
-        st.caption(f"{len(especes)} espèce(s) disponible(s)")
+        st.caption(f"{len(especes)} espece(s) disponible(s)")
 
-        # Dropdown "recherchable" : on clique puis on tape pour filtrer.
         especes_options = [""] + especes
-        st.caption("Cliquez puis commencez à taper pour filtrer.")
 
         if "espece_selectionnee" not in st.session_state:
             st.session_state.espece_selectionnee = especes[0]
@@ -47,36 +89,115 @@ def render_sidebar() -> tuple[str, str, str, str | None]:
         )
 
         espece = st.selectbox(
-            "Nom de l'espèce",
+            "Nom de l'espece",
             options=especes_options,
             index=index,
             key="espece_selectionnee",
-            help="Tapez après ouverture pour filtrer la liste."
+            help="Tapez apres ouverture pour filtrer la liste.",
+            label_visibility="collapsed",  # label géré manuellement au-dessus
         )
 
         if not espece:
-            st.warning("Sélectionnez une espèce dans la liste.")
+            st.warning("Selectionnez une espece dans la liste.")
             st.stop()
 
+        # Affiche le nom en italique sous le selectbox
+        st.markdown(
+            f"<p style='font-size:0.78rem; color:#6b7280; font-style:italic; margin-top:2px;'>"
+            f"{espece}</p>",
+            unsafe_allow_html=True,
+        )
+
         st.divider()
+
+        # ── Sélection de la période ───────────────────────────────────────
+        st.markdown(
+            "<p style='font-size:0.82rem; font-weight:600; color:#374151; margin-bottom:4px;'>"
+            "Periode de projection</p>",
+            unsafe_allow_html=True,
+        )
+
         periode_label = st.selectbox(
-            "Période de projection",
+            "Periode",
             options=list(PERIODES.keys()),
+            label_visibility="collapsed",
         )
         periode_cle = PERIODES[periode_label]
 
+        st.divider()
+
+        # ── Sélection du SSP ──────────────────────────────────────────────
         if periode_cle == "current":
-            st.info(
-                "**Pas de scénario SSP pour la période 1970–2000.**  \n"
-                "Ces données correspondent aux observations climatiques actuelles."
+            st.markdown(
+                """
+                <div style="
+                    background-color: #f0faf3;
+                    border-left: 4px solid #1b5e35;
+                    border-radius: 4px;
+                    padding: 10px 12px;
+                    font-size: 0.82rem;
+                    color: #374151;
+                ">
+                    <strong>Periode actuelle (1970–2000)</strong><br>
+                    Aucun scenario SSP — ces donnees correspondent
+                    aux observations climatiques de reference.
+                </div>
+                """,
+                unsafe_allow_html=True,
             )
             ssp_choisi = None
+
         else:
-            ssp_choisi = st.selectbox(
-                "Scénario climatique (SSP)",
-                options=SSP_LIST,
-                help="SSP 126 = scénario optimiste  ·  SSP 585 = scénario pessimiste",
+            st.markdown(
+                "<p style='font-size:0.82rem; font-weight:600; color:#374151; margin-bottom:4px;'>"
+                "Scenario climatique (SSP)</p>",
+                unsafe_allow_html=True,
             )
 
-    return espece, periode_label, periode_cle, ssp_choisi
+            ssp_choisi = st.selectbox(
+                "SSP",
+                options=SSP_LIST,
+                help="SSP 126 = optimiste  ·  SSP 585 = pessimiste",
+                label_visibility="collapsed",
+            )
 
+            # Badge couleur du SSP sélectionné
+            couleur = SSP_COULEURS.get(ssp_choisi, "#6b7280")
+            st.markdown(
+                f"""
+                <div style="
+                    display: inline-block;
+                    background-color: {couleur}18;
+                    border: 1px solid {couleur};
+                    border-radius: 12px;
+                    padding: 3px 12px;
+                    font-size: 0.78rem;
+                    font-weight: 600;
+                    color: {couleur};
+                    margin-top: 4px;
+                ">
+                    {ssp_choisi}
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+        st.divider()
+
+        # ── Pied de sidebar ───────────────────────────────────────────────
+        st.markdown(
+            """
+            <div style="
+                font-size: 0.72rem;
+                color: #9ca3af;
+                text-align: center;
+                padding: 8px 0 4px 0;
+            ">
+                ANTICI'PYR · Flore Pyrenéenne<br>
+                Universite de Perpignan Via Domitia
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+    return espece, periode_label, periode_cle, ssp_choisi

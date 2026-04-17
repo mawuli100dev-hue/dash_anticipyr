@@ -1,7 +1,8 @@
+# dash_anticipyr/ui/ssp_info.py
+
 from __future__ import annotations
 
 import streamlit as st
-
 
 ARTICLE_URL = "https://nsojournals.onlinelibrary.wiley.com/doi/10.1002/ecog.08067?af=R"
 
@@ -12,82 +13,103 @@ AUTHORS = [
     "Joris A. M. Bertrand",
 ]
 
+# Valeurs issues de la Figure 2 du rapport (Collette, 2024) - horizon 2090 vs période actuelle
+SSP_DATA = [
+    {
+        "ssp": "SSP 126",
+        "label": "Faibles émissions",
+        "description": "Scénario optimiste : forte mitigation climatique, émissions proches de zéro avant 2100.",
+        "dt": "+2,16 °C",
+        "dp": "-3,56 mm",
+        "couleur": "#2e7d32",
+    },
+    {
+        "ssp": "SSP 245",
+        "label": "Émissions intermédiaires",
+        "description": "Scénario intermédiaire : politiques climatiques partielles, stabilisation en cours de siècle.",
+        "dt": "+3,29 °C",
+        "dp": "-52,6 mm",
+        "couleur": "#f9a825",
+    },
+    {
+        "ssp": "SSP 370",
+        "label": "Émissions élevées",
+        "description": "Scénario pessimiste : faible coopération internationale, émissions en hausse continue.",
+        "dt": "+4,6 °C",
+        "dp": "-97,98 mm",
+        "couleur": "#e65100",
+    },
+    {
+        "ssp": "SSP 585",
+        "label": "Émissions très élevées",
+        "description": "Scénario extrême : dépendance massive aux énergies fossiles, aucune mitigation.",
+        "dt": "+6,14 °C",
+        "dp": "-132,36 mm",
+        "couleur": "#b71c1c",
+    },
+]
+
 
 def render_ssp_info() -> None:
-    st.title("Scénarios climatiques (SSPs)")
-
+    st.markdown("## Scénarios climatiques (SSPs)")
     st.markdown(
-        """
-Les **SSPs** (Shared Socioeconomic Pathways) décrivent des trajectoires socio-économiques menant à différents niveaux d'émissions.
-L'article de référence utilise **SSP126, SSP245, SSP370 et SSP585** pour projeter l'évolution des conditions bioclimatiques dans les Pyrénées.
-
-> Note : les scénarios ne sont pas fournis avec une “probabilité” statistique unique (ça dépend des hypothèses). Ci-dessous, on donne une lecture qualitative “plus ou moins fortes” en termes d'émissions, et des champs prêts à accueillir les valeurs exactes (°C et mm) reportées par l'article.
-"""
+        "Les **SSPs** (Shared Socioeconomic Pathways) décrivent des trajectoires "
+        "socio-économiques menant à différents niveaux d'émissions de gaz à effet de serre. "
+        "Ce tableau de bord utilise quatre scénarios pour projeter l'évolution des habitats "
+        "des espèces pyrénéennes jusqu'en 2090."
     )
 
-    st.markdown("## Article méthodologique")
-    st.markdown(f"- Lien : {ARTICLE_URL}")
-    st.markdown("## Auteurs (article)")
-    st.markdown("- " + ", ".join(AUTHORS))
-
-    st.markdown("## Concepteurs du tableau de bord")
-    st.markdown("- Concepteurs : Ayi AMAVIGAN")
+    # ── Cartes SSP ────────────────────────────────────────────────────────
+    cols = st.columns(4)
+    for col, ssp in zip(cols, SSP_DATA):
+        with col:
+            st.markdown(
+                f"""
+                <div style="
+                    border-left: 5px solid {ssp['couleur']};
+                    padding: 12px 16px;
+                    background-color: #f9f9f9;
+                    border-radius: 6px;
+                ">
+                    <p style="font-size:1.1rem; font-weight:700; margin:0; color:{ssp['couleur']}">
+                        {ssp['ssp']}
+                    </p>
+                    <p style="font-size:0.85rem; font-weight:600; color:#444; margin:4px 0;">
+                        {ssp['label']}
+                    </p>
+                    <p style="font-size:0.82rem; color:#666; margin:8px 0;">
+                        {ssp['description']}
+                    </p>
+                    <p style="margin:4px 0; font-size:0.85rem;">
+                        <strong>Temperature (2090) :</strong> {ssp['dt']}
+                    </p>
+                    <p style="margin:4px 0; font-size:0.85rem;">
+                        <strong>Precipitations (2090) :</strong> {ssp['dp']}
+                    </p>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
 
     st.divider()
 
-    st.markdown("## Résumé rapide par scénario")
-
-    with st.expander("Valeurs ΔT (°C) et ΔP (mm) à renseigner (depuis l'article)"):
-        cols = st.columns(4)
-        # On garde des valeurs sous forme de texte (plus simple pour coller des valeurs + unités).
-        defaults = {
-            "SSP 126": {"dt": "—", "dp": "—"},
-            "SSP 245": {"dt": "—", "dp": "—"},
-            "SSP 370": {"dt": "—", "dp": "—"},
-            "SSP 585": {"dt": "—", "dp": "—"},
-        }
-
-        for i, ssp in enumerate(["SSP 126", "SSP 245", "SSP 370", "SSP 585"]):
-            with cols[i]:
-                st.markdown(f"**{ssp}**")
-                st.session_state.setdefault(f"ssp_{ssp}_dt", defaults[ssp]["dt"])
-                st.session_state.setdefault(f"ssp_{ssp}_dp", defaults[ssp]["dp"])
-                dt = st.text_input(
-                    "ΔT (°C)",
-                    value=st.session_state[f"ssp_{ssp}_dt"],
-                    key=f"ssp_{ssp}_dt_input",
-                )
-                dp = st.text_input(
-                    "ΔP (mm)",
-                    value=st.session_state[f"ssp_{ssp}_dp"],
-                    key=f"ssp_{ssp}_dp_input",
-                )
-                st.session_state[f"ssp_{ssp}_dt"] = dt
-                st.session_state[f"ssp_{ssp}_dp"] = dp
-
-    def dt(ssp: str) -> str:
-        return st.session_state.get(f"ssp_{ssp}_dt", "—")
-
-    def dp(ssp: str) -> str:
-        return st.session_state.get(f"ssp_{ssp}_dp", "—")
-
+    # ── Tableau récapitulatif ─────────────────────────────────────────────
+    st.markdown("### Recapitulatif a l'horizon 2090")
     st.markdown(
-        """
-| SSP | Lecture émissions (qualitative) | ΔT (°C) | ΔP (mm) |
-|---|---|---|---|
-| SSP 126 | Trajectoire de mitigation (faibles émissions) | {dt126} | {dp126} |
-| SSP 245 | Émissions intermédiaires | {dt245} | {dp245} |
-| SSP 370 | Émissions élevées | {dt370} | {dp370} |
-| SSP 585 | Émissions très élevées | {dt585} | {dp585} |
-""".format(
-            dt126=dt("SSP 126"),
-            dp126=dp("SSP 126"),
-            dt245=dt("SSP 245"),
-            dp245=dp("SSP 245"),
-            dt370=dt("SSP 370"),
-            dp370=dp("SSP 370"),
-            dt585=dt("SSP 585"),
-            dp585=dp("SSP 585"),
+        "| SSP | Emissions | Delta T (°C) | Delta P (mm) |\n"
+        "|---|---|---|---|\n"
+        + "\n".join(
+            f"| **{s['ssp']}** | {s['label']} | {s['dt']} | {s['dp']} |"
+            for s in SSP_DATA
         )
     )
 
+    st.divider()
+
+    # ── Références ────────────────────────────────────────────────────────
+    st.markdown("### References")
+    st.markdown(
+        f"**Article :** [{ARTICLE_URL}]({ARTICLE_URL})  \n"
+        "**Auteurs :** " + " · ".join(AUTHORS) + "  \n"
+        "**Tableau de bord :** Ayi AMAVIGAN"
+    )
