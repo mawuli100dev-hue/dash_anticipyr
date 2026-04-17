@@ -35,10 +35,10 @@ def render_sidebar() -> tuple[str, str, str, str | None, str]:
             """
             <div style="padding:16px 8px 8px 8px; margin-bottom:4px;">
                 <p style="font-size:1.2rem; font-weight:700; color:#1b5e35; margin:0; letter-spacing:0.02em;">
-                    Flore Pyrenéenne
+                    Flore Pyrénéenne
                 </p>
                 <p style="font-size:0.78rem; color:#9ca3af; margin:2px 0 0 0;">
-                    Selectionnez une espece, une periode et un scenario
+                    Sélectionnez une espèce, une période et un scénario
                 </p>
             </div>
             """,
@@ -50,7 +50,7 @@ def render_sidebar() -> tuple[str, str, str, str | None, str]:
         # ── Espèce ────────────────────────────────────────────────────────
         st.markdown(
             "<p style='font-size:0.82rem; font-weight:600; color:#374151; margin-bottom:4px;'>"
-            "Espece etudiee</p>",
+            "Espèce étudiée</p>",
             unsafe_allow_html=True,
         )
 
@@ -64,7 +64,7 @@ def render_sidebar() -> tuple[str, str, str, str | None, str]:
             )
             st.stop()
 
-        st.caption(f"{len(especes)} espece(s) disponible(s)")
+        st.caption(f"{len(especes)} espèce(s) disponible(s)")
 
         especes_options = [""] + especes
 
@@ -78,16 +78,16 @@ def render_sidebar() -> tuple[str, str, str, str | None, str]:
         )
 
         espece = st.selectbox(
-            "Nom de l'espece",
+            "Nom de l'espèce",
             options=especes_options,
             index=index,
             key="espece_selectionnee",
-            help="Tapez apres ouverture pour filtrer la liste.",
+            help="Tapez après ouverture pour filtrer la liste.",
             label_visibility="collapsed",
         )
 
         if not espece:
-            st.warning("Selectionnez une espece dans la liste.")
+            st.warning("Sélectionnez une espèce dans la liste.")
             st.stop()
 
         st.markdown(
@@ -101,12 +101,12 @@ def render_sidebar() -> tuple[str, str, str, str | None, str]:
         # ── Période ───────────────────────────────────────────────────────
         st.markdown(
             "<p style='font-size:0.82rem; font-weight:600; color:#374151; margin-bottom:4px;'>"
-            "Periode de projection</p>",
+            "Période de projection</p>",
             unsafe_allow_html=True,
         )
 
         periode_label = st.selectbox(
-            "Periode",
+            "Période",
             options=list(PERIODES.keys()),
             label_visibility="collapsed",
         )
@@ -126,9 +126,9 @@ def render_sidebar() -> tuple[str, str, str, str | None, str]:
                     font-size:0.82rem;
                     color:#374151;
                 ">
-                    <strong>Periode actuelle (1970–2000)</strong><br>
-                    Aucun scenario SSP — ces donnees correspondent
-                    aux observations climatiques de reference.
+                    <strong>Période actuelle (1970–2000)</strong><br>
+                    Aucun scénario SSP — ces données correspondent
+                    aux observations climatiques de référence.
                 </div>
                 """,
                 unsafe_allow_html=True,
@@ -138,7 +138,7 @@ def render_sidebar() -> tuple[str, str, str, str | None, str]:
         else:
             st.markdown(
                 "<p style='font-size:0.82rem; font-weight:600; color:#374151; margin-bottom:4px;'>"
-                "Scenario climatique (SSP)</p>",
+                "Scénario climatique (SSP)</p>",
                 unsafe_allow_html=True,
             )
 
@@ -196,8 +196,8 @@ def render_sidebar() -> tuple[str, str, str, str | None, str]:
         st.markdown(
             """
             <div style="font-size:0.72rem; color:#9ca3af; text-align:center; padding:8px 0 4px 0;">
-                ANTICI'PYR · Flore Pyrenéenne<br>
-                Universite de Perpignan Via Domitia
+                ANTICI'PYR · Flore Pyrénéenne<br>
+                Université de Perpignan Via Domitia
             </div>
             """,
             unsafe_allow_html=True,
