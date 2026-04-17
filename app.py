@@ -25,16 +25,17 @@ def main() -> None:
         initial_sidebar_state="expanded",
     )
 
-    inject_styles()  # ← tout le CSS est ici
+    inject_styles()
 
     st.markdown(
-        "<p class=\"main-subtitle\">Projection bioclimatique des espèces endémiques pyrénéennes</p>",
+        "<p style='color:#6b7280;font-style:italic;margin-bottom:16px;'>"
+        "Projection bioclimatique des espèces endémiques pyrénéennes</p>",
         unsafe_allow_html=True,
     )
 
     espece, periode_label, periode_cle, ssp_choisi, mode_visu = render_sidebar()
 
-    tab_carte, tab_ssp = st.tabs(["Carte de distribution", "Scenarios SSP"])
+    tab_carte, tab_ssp = st.tabs(["Carte de distribution", "Scénarios SSP"])
 
     with tab_carte:
         render_map_section(espece, periode_label, periode_cle, ssp_choisi, mode_visu)

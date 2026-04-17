@@ -9,10 +9,11 @@ from typing import Tuple
 import matplotlib
 matplotlib.use("Agg")
 
-import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
+import matplotlib.pyplot as plt
 import numpy as np
 import rasterio
+import rasterio.coords
 import streamlit as st
 
 from dash_anticipyr.core.constants import SEUIL_BINARISATION
@@ -50,10 +51,6 @@ def charger_raster(chemin_tif: str) -> Tuple[np.ndarray, rasterio.coords.Boundin
 
 
 def binariser_raster(data: np.ndarray, mode: str, seuil: float = SEUIL_BINARISATION) -> np.ndarray:
-    """
-    mode="absence"  -> pixels prob < seuil  = 0.0, reste NaN
-    mode="presence" -> pixels prob >= seuil = 1.0, reste NaN
-    """
     result = np.full_like(data, np.nan)
     if mode == "absence":
         result[data < seuil] = 0.0
@@ -62,27 +59,55 @@ def binariser_raster(data: np.ndarray, mode: str, seuil: float = SEUIL_BINARISAT
     return result
 
 
-def creer_figure(data: np.ndarray, bounds, titre: str, mode: str = "continu") -> plt.Figure:
+def creer_figure_composite(
+    data: np.ndarray,
+    bounds: rasterio.coords.BoundingBox,
+    titre: str,
+    mode: str = "continu",
+    crs_source: str = "EPSG:4326",
+) -> plt.Figure:
     """
-    Crée la figure matplotlib.
-    mode : "continu" | "absence" | "presence"
+    Figure matplotlib avec fond de carte OSM (contextily) + raster superposé.
+    Si contextily est absent ou le réseau coupé, s'affiche sans fond.
     """
     fig, ax = plt.subplots(figsize=(20, 12))
-    # Fond blanc — même comportement pour les 3 modes
-    # matplotlib utilise blanc par défaut, on ne touche pas à fig.patch ni ax.facecolor
-
     masked = np.ma.masked_invalid(data)
 
     if mode == "continu":
-        img = ax.imshow(
-            masked,
-            cmap="viridis",
-            extent=[bounds.left, bounds.right, bounds.bottom, bounds.top],
-            origin="upper",
-            vmin=0.0,
-            vmax=1.0,
-            interpolation="nearest",
+        cmap_plot: str | mcolors.Colormap = "viridis"
+        vmin, vmax = 0.0, 1.0
+    elif mode == "absence":
+        cmap_plot = mcolors.ListedColormap(["#4393c3"])
+        vmin, vmax = 0.0, 1.0
+    else:  # presence
+        cmap_plot = mcolors.ListedColormap(["#2e7d32"])
+        vmin, vmax = 0.0, 1.0
+
+    img = ax.imshow(
+        masked,
+        cmap=cmap_plot,
+        extent=[bounds.left, bounds.right, bounds.bottom, bounds.top],
+        origin="upper",
+        vmin=vmin,
+        vmax=vmax,
+        interpolation="nearest",
+        alpha=0.75,
+        zorder=2,
+    )
+
+    try:
+        import contextily as ctx
+        ctx.add_basemap(
+            ax,
+            crs=crs_source,
+            source=ctx.providers.OpenStreetMap.Mapnik,
+            zoom="auto",
+            zorder=1,
         )
+    except Exception:
+        pass
+
+    if mode == "continu":
         cbar = fig.colorbar(img, ax=ax, fraction=0.012, pad=0.03)
         cbar.set_label("Probabilité de présence", fontsize=11, labelpad=10)
         cbar.set_ticks([0.0, 0.25, 0.5, 0.75, 1.0])
@@ -90,42 +115,18 @@ def creer_figure(data: np.ndarray, bounds, titre: str, mode: str = "continu") ->
             ["0.0\n(Absent)", "0.25", "0.50", "0.75", "1.0\n(Présent)"],
             fontsize=9,
         )
-
-    elif mode == "absence":
-        # Couleur unie bleue — ListedColormap évite la colorbar variable
-        cmap_uni = mcolors.ListedColormap(["#4393c3"])
-        img = ax.imshow(
-            masked,
-            cmap=cmap_uni,
-            extent=[bounds.left, bounds.right, bounds.bottom, bounds.top],
-            origin="upper",
-            vmin=0.0,
-            vmax=1.0,
-            interpolation="nearest",
+    else:
+        label = (
+            f"Absence (prob < {SEUIL_BINARISATION})"
+            if mode == "absence"
+            else f"Présence (prob >= {SEUIL_BINARISATION})"
         )
         cbar = fig.colorbar(img, ax=ax, fraction=0.012, pad=0.03, ticks=[0.5])
-        cbar.set_label(
-            f"Absence  (prob < {SEUIL_BINARISATION})", fontsize=11, labelpad=10
+        cbar.set_label(label, fontsize=11, labelpad=10)
+        cbar.set_ticklabels(
+            ["Absent"] if mode == "absence" else ["Présent"],
+            fontsize=10,
         )
-        cbar.set_ticklabels(["Absent"], fontsize=10)
-
-    elif mode == "presence":
-        # Couleur unie verte — ton choix visuel original
-        cmap_uni = mcolors.ListedColormap(["#2e7d32"])
-        img = ax.imshow(
-            masked,
-            cmap=cmap_uni,
-            extent=[bounds.left, bounds.right, bounds.bottom, bounds.top],
-            origin="upper",
-            vmin=0.0,
-            vmax=1.0,
-            interpolation="nearest",
-        )
-        cbar = fig.colorbar(img, ax=ax, fraction=0.012, pad=0.03, ticks=[0.5])
-        cbar.set_label(
-            f"Présence  (prob >= {SEUIL_BINARISATION})", fontsize=11, labelpad=10
-        )
-        cbar.set_ticklabels(["Présent"], fontsize=10)
 
     ax.set_xlabel("Longitude (°)", fontsize=10)
     ax.set_ylabel("Latitude (°)", fontsize=10)

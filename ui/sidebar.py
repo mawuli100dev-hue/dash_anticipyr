@@ -127,7 +127,7 @@ def render_sidebar() -> tuple[str, str, str, str | None, str]:
                     color:#374151;
                 ">
                     <strong>Période actuelle (1970–2000)</strong><br>
-                    Aucun scénario SSP — ces données correspondent
+                    Aucun scénario SSP - ces données correspondent
                     aux observations climatiques de référence.
                 </div>
                 """,

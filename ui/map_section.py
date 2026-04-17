@@ -1,19 +1,21 @@
+# dash_anticipyr/ui/map_section.py
+
 from __future__ import annotations
 
-from pathlib import Path
-
 import streamlit as st
+from streamlit_folium import st_folium
 
+from dash_anticipyr.core.carte_interactive import creer_carte_interactive
 from dash_anticipyr.core.paths import data_cartographies_root
 from dash_anticipyr.core.raster import (
+    binariser_raster,
     charger_raster,
     construire_chemin,
-    creer_figure,
+    creer_figure_composite,
     figure_en_bytes,
 )
-from dash_anticipyr.core.inaturalist import get_photo_espece  # ← import de ta fonction
+from dash_anticipyr.core.inaturalist import get_infos_espece
 from dash_anticipyr.core.constants import MODE_MAP, SEUIL_BINARISATION
-from dash_anticipyr.core.raster import binariser_raster
 
 
 def render_map_section(
@@ -24,43 +26,38 @@ def render_map_section(
     mode_visu: str,
 ) -> None:
 
-    # ── 1. PHOTO iNaturalist ───────────────────────────────────────────────
-    PHOTO_WIDTH_PX = 400
-    PHOTO_HEIGHT_PX = 300
+    # ── 1. PHOTO iNaturalist ──────────────────────────────────────────────
+    infos = get_infos_espece(espece)
+    photo_url = infos["photo_url"]
 
-    photo_url = get_photo_espece(espece)
+    col_photo, col_info = st.columns([1, 3])
 
-    if photo_url:
-        col_photo, col_info = st.columns([1, 3])
-        with col_photo:
+    with col_photo:
+        if photo_url:
             st.markdown(
                 f"""
                 <img
                     src="{photo_url}"
-                    width="{PHOTO_WIDTH_PX}"
-                    height="{PHOTO_HEIGHT_PX}"
-                    style="object-fit: cover; border-radius: 8px;"
+                    width="400"
+                    height="300"
+                    style="object-fit:cover;border-radius:8px;"
                     alt="{espece}"
                 />
-                <p style="font-size: 0.75rem; color: gray; margin-top: 4px;">
+                <p style="font-size:0.75rem;color:gray;margin-top:4px;">
                     <em>{espece}</em>
                 </p>
                 """,
                 unsafe_allow_html=True,
             )
-        with col_info:
-            st.markdown(
-                f"### *{espece}*\n"
-                f"**Période :** {periode_label}  \n"
-                f"**Scénario :** {ssp_choisi if ssp_choisi else 'Période actuelle'}"
-            )
-    else:
+        else:
+            st.info("Aucune photo disponible sur iNaturalist.")
+
+    with col_info:
         st.markdown(
             f"### *{espece}*\n"
             f"**Période :** {periode_label}  \n"
             f"**Scénario :** {ssp_choisi if ssp_choisi else 'Période actuelle'}"
         )
-        st.info("Aucune photo disponible sur iNaturalist pour cette espèce.")
 
     st.divider()
 
@@ -81,42 +78,50 @@ def render_map_section(
         st.error(f"Erreur lors de la lecture du fichier TIF :  \n`{e}`")
         st.stop()
 
-        # ── 3. CARTE ──────────────────────────────────────────────────────────
-
+    # ── 3. PRÉPARATION ────────────────────────────────────────────────────
     mode_cle = MODE_MAP[mode_visu]
-
-    # Transforme les données si mode binaire
     data_affichee = data if mode_cle == "continu" else binariser_raster(data, mode_cle)
 
     if periode_cle == "current":
-        titre_carte = f"{espece}  ·  Période actuelle (1970–2000)"
+        titre_carte = f"{espece}  ·  Période actuelle (1970-2000)"
     else:
         titre_carte = f"{espece}  ·  {periode_label}  |  {ssp_choisi}"
 
-    # Ajoute le mode au titre si binaire
     if mode_cle != "continu":
         titre_carte += f"  ·  {mode_visu}  (seuil = {SEUIL_BINARISATION})"
 
-    fig = creer_figure(data_affichee, bounds, titre_carte, mode=mode_cle)
-    st.pyplot(fig, use_container_width=True)
-
-    # ── 4. TÉLÉCHARGEMENTS ────────────────────────────────────────────────
-    st.markdown("#### Télécharger la carte sélectionnée")
+    # Carte interactive + figure composite créées avant l'affichage
+    carte = creer_carte_interactive(data_affichee, bounds, titre_carte, mode=mode_cle)
+    fig_composite = creer_figure_composite(data_affichee, bounds, titre_carte, mode=mode_cle)
 
     nom_fichier = (
         espece.replace(" ", "_")
         + "_"
-        + periode_label.replace("–", "-").replace(" ", "_").replace("(", "").replace(")", "")
+        + periode_label
+            .replace("–", "-")
+            .replace(" ", "_")
+            .replace("(", "")
+            .replace(")", "")
     )
     if ssp_choisi:
         nom_fichier += "_" + ssp_choisi.replace(" ", "")
 
+    # ── 4. CARTE INTERACTIVE ──────────────────────────────────────────────
+    st_folium(
+        carte,
+        width="100%",
+        height=550,
+        returned_objects=[],
+    )
+
+    # ── 5. TÉLÉCHARGEMENTS sous la carte ─────────────────────────────────
+    st.markdown("#### Télécharger la carte")
     dl1, dl2, dl3, dl4 = st.columns(4)
 
     with dl1:
         st.download_button(
             label="PNG",
-            data=figure_en_bytes(fig, "png"),
+            data=figure_en_bytes(fig_composite, "png"),
             file_name=f"{nom_fichier}.png",
             mime="image/png",
             use_container_width=True,
@@ -124,7 +129,7 @@ def render_map_section(
     with dl2:
         st.download_button(
             label="JPG",
-            data=figure_en_bytes(fig, "jpeg"),
+            data=figure_en_bytes(fig_composite, "jpeg"),
             file_name=f"{nom_fichier}.jpg",
             mime="image/jpeg",
             use_container_width=True,
@@ -132,7 +137,7 @@ def render_map_section(
     with dl3:
         st.download_button(
             label="PDF",
-            data=figure_en_bytes(fig, "pdf"),
+            data=figure_en_bytes(fig_composite, "pdf"),
             file_name=f"{nom_fichier}.pdf",
             mime="application/pdf",
             use_container_width=True,
