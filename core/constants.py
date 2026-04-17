@@ -13,3 +13,11 @@ PERIODES: Dict[str, str] = {
 
 SSP_LIST: List[str] = ["SSP 126", "SSP 245", "SSP 370", "SSP 585"]
 
+MODE_MAP: Dict[str, str] = {
+    "Continu":  "continu",
+    "Absence":  "absence",
+    "Présence": "presence",
+}
+
+# Seuil par défaut pour la binarisation (modifiable ici uniquement)
+SEUIL_BINARISATION: float = 0.5

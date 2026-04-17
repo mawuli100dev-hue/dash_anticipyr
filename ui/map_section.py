@@ -12,6 +12,8 @@ from dash_anticipyr.core.raster import (
     figure_en_bytes,
 )
 from dash_anticipyr.core.inaturalist import get_photo_espece  # ← import de ta fonction
+from dash_anticipyr.core.constants import MODE_MAP, SEUIL_BINARISATION
+from dash_anticipyr.core.raster import binariser_raster
 
 
 def render_map_section(
@@ -19,6 +21,7 @@ def render_map_section(
     periode_label: str,
     periode_cle: str,
     ssp_choisi: str | None,
+    mode_visu: str,
 ) -> None:
 
     # ── 1. PHOTO iNaturalist ───────────────────────────────────────────────
@@ -78,13 +81,23 @@ def render_map_section(
         st.error(f"Erreur lors de la lecture du fichier TIF :  \n`{e}`")
         st.stop()
 
-    # ── 3. CARTE ──────────────────────────────────────────────────────────
+        # ── 3. CARTE ──────────────────────────────────────────────────────────
+
+    mode_cle = MODE_MAP[mode_visu]
+
+    # Transforme les données si mode binaire
+    data_affichee = data if mode_cle == "continu" else binariser_raster(data, mode_cle)
+
     if periode_cle == "current":
         titre_carte = f"{espece}  ·  Période actuelle (1970–2000)"
     else:
         titre_carte = f"{espece}  ·  {periode_label}  |  {ssp_choisi}"
 
-    fig = creer_figure(data, bounds, titre_carte)
+    # Ajoute le mode au titre si binaire
+    if mode_cle != "continu":
+        titre_carte += f"  ·  {mode_visu}  (seuil = {SEUIL_BINARISATION})"
+
+    fig = creer_figure(data_affichee, bounds, titre_carte, mode=mode_cle)
     st.pyplot(fig, use_container_width=True)
 
     # ── 4. TÉLÉCHARGEMENTS ────────────────────────────────────────────────
