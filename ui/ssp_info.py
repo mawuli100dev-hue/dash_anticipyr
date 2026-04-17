@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import streamlit as st
 
 ARTICLE_URL = "https://nsojournals.onlinelibrary.wiley.com/doi/10.1002/ecog.08067?af=R"
@@ -13,7 +15,9 @@ AUTHORS = [
     "Joris A. M. Bertrand",
 ]
 
-# Valeurs issues de la Figure 2 du rapport (Collette, 2024) - horizon 2090 vs période actuelle
+# Chemin vers le graphique SSP (issu de la Figure 2 du rapport)
+FIGURE_SSP = Path(__file__).parent.parent / "data" / "figures" / "ssp_projections.png"
+
 SSP_DATA = [
     {
         "ssp": "SSP 126",
@@ -90,6 +94,22 @@ def render_ssp_info() -> None:
                 """,
                 unsafe_allow_html=True,
             )
+
+    st.divider()
+
+    # ── Graphique projections climatiques ─────────────────────────────────
+    if FIGURE_SSP.exists():
+        st.image(
+            str(FIGURE_SSP),
+            caption="Figure 2 — Projections de température et précipitations annuelles moyennes "
+                    "par scénario SSP (Collette, 2024)",
+            use_container_width=True,
+        )
+    else:
+        st.info(
+            f"Graphique non trouvé : `{FIGURE_SSP}`  \n"
+            "Placez le fichier image dans `dash_anticipyr/data/figures/`."
+        )
 
     st.divider()
 
