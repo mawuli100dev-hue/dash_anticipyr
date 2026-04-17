@@ -27,16 +27,7 @@ def main() -> None:
     st.markdown(
         """
         <style>
-            /* ── Titre ── */
-            .main-title {
-                font-size: 1.6rem;
-                font-weight: 700;
-                color: #1b5e35;
-                margin-bottom: 0.1rem;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
+            /* ── Sous-titre ── */
             .main-subtitle {
                 font-size: 0.85rem;
                 color: #6b7280;
@@ -49,8 +40,8 @@ def main() -> None:
             .stTabs [data-baseweb="tab-list"] {
                 gap: 24px !important;
                 padding-left: 0px !important;
-                border-bottom: 2px solid #e5e7eb !important;
-                margin-bottom: 1.2rem !important;
+                border-bottom: none !important;
+                margin-bottom: 0 !important;
                 justify-content: flex-start !important;
             }
             .stTabs [data-baseweb="tab"] {
@@ -73,8 +64,12 @@ def main() -> None:
                 color: #1b5e35 !important;
                 background-color: #f0faf3 !important;
             }
-            /* Supprime le tab highlight par défaut de Streamlit */
+
+            /* ── Supprime les 2 traits gris sous les onglets ── */
             .stTabs [data-baseweb="tab-highlight"] {
+                display: none !important;
+            }
+            .stTabs [data-baseweb="tab-border"] {
                 display: none !important;
             }
 
@@ -97,19 +92,34 @@ def main() -> None:
                 color: white !important;
             }
 
-            /* ── Padding global ── */
-            .block-container {
-                padding-top: 1.5rem !important;
-                padding-bottom: 2rem !important;
-            }
-            /* ── Masque le header fixe de Streamlit ── */
+            /* ── Header ── */
             [data-testid="stHeader"] {
+                background-color: #ffffff !important;
+                border-bottom: 1px solid #e5e7eb !important;
+            }
+            [data-testid="stHeader"]::before {
+                content: "Flore Pyrénéenne - Simulation des Habitats";
+                display: block;
+                position: absolute;
+                left: 1.5rem;
+                top: 50%;
+                transform: translateY(-50%);
+                font-size: 1rem;
+                font-weight: 700;
+                color: #1b5e35;
+                letter-spacing: 0.01em;
+                white-space: nowrap;
+            }
+            [data-testid="stToolbar"] {
+                display: none !important;
+            }
+            [data-testid="stDecoration"] {
                 display: none !important;
             }
 
-            /* ── Compense : sans le header, le padding-top peut être réduit ── */
+            /* ── Padding global ── */
             .block-container {
-                padding-top: 2rem !important;
+                padding-top: 4rem !important;
                 padding-bottom: 2rem !important;
             }
         </style>
@@ -117,19 +127,13 @@ def main() -> None:
         unsafe_allow_html=True,
     )
 
-    # ── En-tête ───────────────────────────────────────────────────────────
     st.markdown(
-        '<p class="main-title">Flore Pyrenéenne - Simulation des Habitats</p>',
-        unsafe_allow_html=True,
-    )
-    st.markdown(
-        "<p class=\"main-subtitle\">Projection bioclimatique des espèces endémiques pyrénéennes · Projet ANTICI'PYR</p>",
+        "<p class=\"main-subtitle\">Projection bioclimatique des espèces endémiques pyrénéennes</p>",
         unsafe_allow_html=True,
     )
 
     espece, periode_label, periode_cle, ssp_choisi = render_sidebar()
 
-    # ── Onglets ───────────────────────────────────────────────────────────
     tab_carte, tab_ssp = st.tabs(["Carte de distribution", "Scenarios SSP"])
 
     with tab_carte:
