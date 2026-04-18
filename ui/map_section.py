@@ -1,3 +1,5 @@
+# dash_anticipyr/ui/map_section.py
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -11,9 +13,7 @@ from dash_anticipyr.core.raster import (
     creer_figure,
     figure_en_bytes,
 )
-from dash_anticipyr.core.inaturalist import get_photo_espece  # ← import de ta fonction
-from dash_anticipyr.core.constants import MODE_MAP, SEUIL_BINARISATION
-from dash_anticipyr.core.raster import binariser_raster
+from dash_anticipyr.core.inaturalist import get_photo_espece
 
 
 def render_map_section(
@@ -24,8 +24,8 @@ def render_map_section(
     mode_visu: str,
 ) -> None:
 
-    # ── 1. PHOTO iNaturalist ───────────────────────────────────────────────
-    PHOTO_WIDTH_PX = 400
+    # ── 1. PHOTO iNaturalist ──────────────────────────────────────────────
+    PHOTO_WIDTH_PX  = 400
     PHOTO_HEIGHT_PX = 300
 
     photo_url = get_photo_espece(espece)
@@ -64,9 +64,18 @@ def render_map_section(
 
     st.divider()
 
-    # ── 2. CHARGEMENT DU RASTER ───────────────────────────────────────────
+    # ── 2. CONSTRUCTION DU CHEMIN RASTER ─────────────────────────────────
+    # mode_visu vaut "Continu" ou "Absence/Présence"
+    est_binaire = (mode_visu == "Absence/Présence")
+
     racine = data_cartographies_root()
-    chemin_tif = construire_chemin(racine, espece, periode_cle, ssp_choisi)
+    try:
+        chemin_tif = construire_chemin(
+            racine, espece, periode_cle, ssp_choisi, binaire=est_binaire
+        )
+    except ValueError as e:
+        st.warning(str(e))
+        return
 
     if not chemin_tif.exists():
         st.warning(
@@ -75,32 +84,27 @@ def render_map_section(
         )
         st.stop()
 
+    # ── 3. CHARGEMENT DU RASTER ───────────────────────────────────────────
     try:
         data, bounds = charger_raster(str(chemin_tif))
     except Exception as e:
         st.error(f"Erreur lors de la lecture du fichier TIF :  \n`{e}`")
         st.stop()
 
-        # ── 3. CARTE ──────────────────────────────────────────────────────────
-
-    mode_cle = MODE_MAP[mode_visu]
-
-    # Transforme les données si mode binaire
-    data_affichee = data if mode_cle == "continu" else binariser_raster(data, mode_cle)
-
+    # ── 4. TITRE ET FIGURE ────────────────────────────────────────────────
     if periode_cle == "current":
-        titre_carte = f"{espece}  ·  Période actuelle (1970–2000)"
+        titre_carte = f"{espece}  ·  Période actuelle (1970-2000)"
     else:
         titre_carte = f"{espece}  ·  {periode_label}  |  {ssp_choisi}"
 
-    # Ajoute le mode au titre si binaire
-    if mode_cle != "continu":
-        titre_carte += f"  ·  {mode_visu}  (seuil = {SEUIL_BINARISATION})"
+    if est_binaire:
+        titre_carte += "  ·  Absence/Présence"
 
-    fig = creer_figure(data_affichee, bounds, titre_carte, mode=mode_cle)
+    mode_figure = "binaire" if est_binaire else "continu"
+    fig = creer_figure(data, bounds, titre_carte, mode=mode_figure)
     st.pyplot(fig, use_container_width=True)
 
-    # ── 4. TÉLÉCHARGEMENTS ────────────────────────────────────────────────
+    # ── 5. TÉLÉCHARGEMENTS ────────────────────────────────────────────────
     st.markdown("#### Télécharger la carte sélectionnée")
 
     nom_fichier = (
@@ -110,6 +114,8 @@ def render_map_section(
     )
     if ssp_choisi:
         nom_fichier += "_" + ssp_choisi.replace(" ", "")
+    if est_binaire:
+        nom_fichier += "_absence_presence"
 
     dl1, dl2, dl3, dl4 = st.columns(4)
 
@@ -141,7 +147,7 @@ def render_map_section(
         with open(chemin_tif, "rb") as f:
             tif_brut = f.read()
         st.download_button(
-            label="TIF (original)",
+            label="TIF",
             data=tif_brut,
             file_name=f"{nom_fichier}.tif",
             mime="image/tiff",
