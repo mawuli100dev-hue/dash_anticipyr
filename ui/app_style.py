@@ -10,7 +10,7 @@ def inject_styles() -> None:
     st.markdown(
         """
         <style>
-            /* ── Sous-titre ── */
+            /*  Sous-titre  */
             .main-subtitle {
                 font-size: 0.85rem;
                 color: #6b7280;
@@ -19,7 +19,7 @@ def inject_styles() -> None:
                 font-style: italic;
             }
 
-            /* ── Onglets ── */
+            /*  Onglets  */
             .stTabs [data-baseweb="tab-list"] {
                 gap: 24px !important;
                 padding-left: 0px !important;
@@ -48,17 +48,17 @@ def inject_styles() -> None:
                 background-color: #f0faf3 !important;
             }
 
-            /* ── Supprime les 2 traits gris sous les onglets ── */
+            /*  Supprime les 2 traits gris sous les onglets  */
             .stTabs [data-baseweb="tab-highlight"] { display: none !important; }
             .stTabs [data-baseweb="tab-border"]    { display: none !important; }
 
-            /* ── Sidebar ── */
+            /*  Sidebar  */
             [data-testid="stSidebar"] {
                 background-color: #f8faf9;
                 border-right: 1px solid #e5e7eb;
             }
 
-            /* ── Boutons de téléchargement ── */
+            /*  Boutons de téléchargement  */
             .stDownloadButton > button {
                 border: 1px solid #1b5e35 !important;
                 color: #1b5e35 !important;
@@ -71,7 +71,7 @@ def inject_styles() -> None:
                 color: white !important;
             }
 
-            /* ── Header ── */
+            /*  Header  */
             [data-testid="stHeader"] {
                 background-color: #ffffff !important;
                 border-bottom: 1px solid #e5e7eb !important;
@@ -90,7 +90,7 @@ def inject_styles() -> None:
                 white-space: nowrap;
             }
 
-            /* ── Toolbar : cache les boutons internes SAUF le bouton sidebar ── */
+            /*  Toolbar : cache les boutons internes SAUF le bouton sidebar  */
             [data-testid="stToolbar"] {
                 background-color: transparent !important;
             }
@@ -104,10 +104,10 @@ def inject_styles() -> None:
                 z-index: 999 !important;
             }
 
-            /* ── Supprime la barre de décoration colorée en haut ── */
+            /*  Supprime la barre de décoration colorée en haut  */
             [data-testid="stDecoration"] { display: none !important; }
 
-            /* ── Padding global ── */
+            /*  Padding global  */
             .block-container {
                 padding-top: 4rem !important;
                 padding-bottom: 2rem !important;

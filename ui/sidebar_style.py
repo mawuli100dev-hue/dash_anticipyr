@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import streamlit as st
 
+
 VERT = "#1b5e35"
 
 SSP_COULEURS = {
@@ -34,7 +35,7 @@ def inject_sidebar_styles(ssp_actif: str | None = None) -> None:
         ombre    = f"0 0 0 3px {couleur}44" if actif else "none"
 
         regles_ssp += f"""
-            /* ── {ssp} ── */
+            /* {ssp} */
             div[data-testid="stColumn"]:has(#{ancre_id}) button {{
                 background-color: {bg} !important;
                 border: 2px solid {couleur} !important;
@@ -92,7 +93,7 @@ def inject_sidebar_styles(ssp_actif: str | None = None) -> None:
     st.markdown(
         f"""
         <style>
-            /* ── Fond sidebar ── */
+            /* Fond sidebar */
             [data-testid="stSidebar"] {{
                 background-color: #f8faf9;
                 border-right: 1px solid #e5e7eb;
@@ -102,12 +103,12 @@ def inject_sidebar_styles(ssp_actif: str | None = None) -> None:
                 margin: 8px 0 !important;
             }}
 
-            /* ── Radio accent vert ── */
+            /* Radio accent vert */
             [data-testid="stSidebar"] [role="radiogroup"] label div:first-child {{
                 border-color: {VERT} !important;
             }}
 
-            /* ── Icône loupe : colonne gauche centrée verticalement ── */
+            /* Icone loupe */
             [data-testid="stSidebar"] .search-icon-col {{
                 display: flex;
                 align-items: center;
@@ -128,30 +129,55 @@ def inject_sidebar_styles(ssp_actif: str | None = None) -> None:
                 max-width: 28px !important;
             }}
 
-            /* ── Espèces en italique dans le selectbox ── */
-            [data-testid="stSidebar"] [data-baseweb="select"] [role="option"] span,
-            [data-testid="stSidebar"] [data-baseweb="select"] [data-testid="stSelectboxContainer"] span {{
+            /*
+             * ITALIQUE dans le selectbox especes
+             * On cible le 1er selectbox de la sidebar (especes)
+             * via :first-of-type pour ne pas toucher le selectbox "Periode"
+             *
+             * Les selectbox Streamlit ont data-baseweb="select"
+             * Chaque div enfant directe est soit :
+             *   - la valeur affichee (champ ferme)
+             *   - les options (liste ouverte, dans un portail hors sidebar)
+             */
+
+            /* Valeur affichee dans le champ ferme - tous niveaux enfants */
+            [data-testid="stSidebar"] [data-testid="stSelectbox"]:first-of-type
+            [data-baseweb="select"] * {{
                 font-style: italic !important;
             }}
 
-            /* ── Couleurs SSP ── */
+            /* Options dans la liste deroulante ouverte (portail global) */
+            [data-baseweb="popover"] [role="option"] *,
+            [data-baseweb="popover"] [role="option"],
+            ul[role="listbox"] li,
+            ul[role="listbox"] li * {{
+                font-style: italic !important;
+            }}
+
+            /* Champ de saisie lors de la recherche */
+            [data-testid="stSidebar"] [data-testid="stSelectbox"]:first-of-type input {{
+                font-style: italic !important;
+            }}
+
+            /* Couleurs SSP */
             {regles_ssp}
         </style>
         """,
         unsafe_allow_html=True,
     )
 
+    # JS uniquement pour les couleurs SSP (fiable)
+    # L'italique est géré en CSS pur ci-dessus
     st.markdown(
         f"""
         <script>
         (function() {{
             var MAPPING = {mapping_js};
 
-            function appliquer() {{
+            function colorierSSP() {{
                 var sidebar = document.querySelector('[data-testid="stSidebar"]');
                 if (!sidebar) return;
-                var boutons = sidebar.querySelectorAll('button');
-                boutons.forEach(function(btn) {{
+                sidebar.querySelectorAll('button').forEach(function(btn) {{
                     var texte = (btn.innerText || btn.textContent || '').trim();
                     for (var ssp in MAPPING) {{
                         if (texte.indexOf(ssp) !== -1) {{
@@ -167,15 +193,15 @@ def inject_sidebar_styles(ssp_actif: str | None = None) -> None:
                 }});
             }}
 
-            appliquer();
+            colorierSSP();
 
-            var observer = new MutationObserver(appliquer);
+            var observer = new MutationObserver(colorierSSP);
             var cible = document.querySelector('[data-testid="stSidebar"]') || document.body;
             observer.observe(cible, {{ childList: true, subtree: true }});
 
             var n = 0;
             var timer = setInterval(function() {{
-                appliquer();
+                colorierSSP();
                 if (++n >= 17) clearInterval(timer);
             }}, 300);
         }})();

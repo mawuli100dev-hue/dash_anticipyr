@@ -63,7 +63,7 @@ def render_ssp_info() -> None:
         "des espèces pyrénéennes jusqu'en 2090."
     )
 
-    # ── Cartes SSP ────────────────────────────────────────────────────────
+    #  Cartes SSP 
     cols = st.columns(4)
     for col, ssp in zip(cols, SSP_DATA):
         with col:
@@ -97,7 +97,7 @@ def render_ssp_info() -> None:
 
     st.divider()
 
-    # ── Graphique projections climatiques ─────────────────────────────────
+    #  Graphique projections climatiques ─
     if FIGURE_SSP.exists():
         st.image(
             str(FIGURE_SSP),
@@ -113,7 +113,7 @@ def render_ssp_info() -> None:
 
     st.divider()
 
-    # ── Tableau récapitulatif ─────────────────────────────────────────────
+    #  Tableau récapitulatif ─
     st.markdown("### Recapitulatif a l'horizon 2090")
     st.markdown(
         "| SSP | Emissions | Delta T (°C) | Delta P (mm) |\n"
@@ -126,7 +126,7 @@ def render_ssp_info() -> None:
 
     st.divider()
 
-    # ── Références ────────────────────────────────────────────────────────
+    #  Références 
     st.markdown("### References")
     st.markdown(
         f"**Article :** [{ARTICLE_URL}]({ARTICLE_URL})  \n"

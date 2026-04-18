@@ -35,7 +35,7 @@ def render_sidebar() -> tuple[str, str, str, str | None, str]:
 
     with st.sidebar:
 
-        # ── Titre ─────────────────────────────────────────────────────────
+        #  Titre ─
         st.markdown(
             """
             <div style="padding:16px 8px 8px 8px; margin-bottom:4px;">
@@ -51,7 +51,7 @@ def render_sidebar() -> tuple[str, str, str, str | None, str]:
         )
         st.divider()
 
-        # ── Espèce ────────────────────────────────────────────────────────
+        #  Espèce 
         st.markdown(
             "<p style='font-size:0.82rem;font-weight:600;color:#374151;margin-bottom:4px;'>"
             "Espèce étudiée</p>",
@@ -118,7 +118,7 @@ def render_sidebar() -> tuple[str, str, str, str | None, str]:
         )
         st.divider()
 
-        # ── Période ───────────────────────────────────────────────────────
+        #  Période ─
         st.markdown(
             "<p style='font-size:0.82rem;font-weight:600;color:#374151;margin-bottom:4px;'>"
             "Période de projection</p>",
@@ -132,7 +132,7 @@ def render_sidebar() -> tuple[str, str, str, str | None, str]:
         periode_cle = PERIODES[periode_label]
         st.divider()
 
-        # ── SSP ───────────────────────────────────────────────────────────
+        #  SSP ─
         if periode_cle == "current":
             st.markdown(
                 """
@@ -169,13 +169,14 @@ def render_sidebar() -> tuple[str, str, str, str | None, str]:
                             use_container_width=True,
                         ):
                             st.session_state.ssp_choisi = ssp
+                            st.session_state["mode_visu"] = st.session_state.get("mode_visu", MODES_VISU[0])
                             st.rerun()
 
             ssp_choisi = st.session_state.ssp_choisi
 
         st.divider()
 
-        # ── Mode de visualisation ─────────────────────────────────────────
+        #  Mode de visualisation ─
         st.markdown(
             "<p style='font-size:0.82rem;font-weight:600;color:#374151;margin-bottom:4px;'>"
             "Mode de visualisation</p>",
