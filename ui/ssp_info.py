@@ -63,7 +63,7 @@ def render_ssp_info() -> None:
         "des espèces pyrénéennes jusqu'en 2090."
     )
 
-    #  Cartes SSP 
+    #  Cartes SSP
     cols = st.columns(4)
     for col, ssp in zip(cols, SSP_DATA):
         with col:
@@ -101,8 +101,7 @@ def render_ssp_info() -> None:
     if FIGURE_SSP.exists():
         st.image(
             str(FIGURE_SSP),
-            caption="Figure 2 — Projections de température et précipitations annuelles moyennes "
-                    "par scénario SSP (Collette, 2024)",
+            caption="Projection moyenne des températures et des précipitations dans les Pyrénées à l’horizon 2081–2100 selon différents scénarios climatiques (Shared Socioeconomic Pathways, SSP), à partir des données WorldClim 2.1 et de l’ensemble des modèles de circulation générale (2030, 2050, 2070 & 2090 correspondants aux périodes 2021–2040, 2041–2060, 2061–2080 et 2081–2100)",
             use_container_width=True,
         )
     else:
@@ -126,7 +125,7 @@ def render_ssp_info() -> None:
 
     st.divider()
 
-    #  Références 
+    #  Références
     st.markdown("### References")
     st.markdown(
         f"**Article :** [{ARTICLE_URL}]({ARTICLE_URL})  \n"
