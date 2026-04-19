@@ -6,20 +6,62 @@ import streamlit as st
 
 
 def inject_styles() -> None:
-    """Injecte le CSS global de l'application."""
     st.markdown(
         """
         <style>
-            /*  Sous-titre  */
+            /* Sous-titre */
             .main-subtitle {
                 font-size: 0.85rem;
                 color: #6b7280;
-                margin-top: 0;
-                margin-bottom: 1.2rem;
+                margin: 0;
                 font-style: italic;
+                line-height: 2.4;
             }
 
-            /*  Onglets  */
+            /* Bouton Imprimer du haut uniquement */
+            .st-key-btn_imprimer_haut button,
+            .st-key-btn_imprimer_disabled button {
+                background-color: #1b5e35 !important;
+                color: #ffffff !important;
+                border: none !important;
+                border-radius: 6px !important;
+                font-size: 0.82rem !important;
+                font-weight: 600 !important;
+                width: 100% !important;
+                transition: background-color 0.18s ease !important;
+            }
+
+            .st-key-btn_imprimer_haut button:hover,
+            .st-key-btn_imprimer_disabled button:hover {
+                background-color: #145228 !important;
+                color: #ffffff !important;
+            }
+
+            .st-key-btn_imprimer_haut button p,
+            .st-key-btn_imprimer_disabled button p {
+                color: #ffffff !important;
+            }
+
+            /* Les 4 boutons du bas : tous pareils */
+            .stDownloadButton > button {
+                border: 1px solid #1b5e35 !important;
+                color: #1b5e35 !important;
+                background-color: #ffffff !important;
+                font-weight: 500 !important;
+                border-radius: 6px !important;
+                transition: background-color 0.18s ease, color 0.18s ease !important;
+            }
+
+            .stDownloadButton > button:hover {
+                background-color: #1b5e35 !important;
+                color: #ffffff !important;
+            }
+
+            .stDownloadButton > button p {
+                color: inherit !important;
+            }
+
+            /* Onglets */
             .stTabs [data-baseweb="tab-list"] {
                 gap: 24px !important;
                 padding-left: 0px !important;
@@ -27,6 +69,7 @@ def inject_styles() -> None:
                 margin-bottom: 0 !important;
                 justify-content: flex-start !important;
             }
+
             .stTabs [data-baseweb="tab"] {
                 font-size: 1rem !important;
                 font-weight: 600 !important;
@@ -38,44 +81,38 @@ def inject_styles() -> None:
                 min-width: 180px !important;
                 text-align: center !important;
             }
+
             .stTabs [aria-selected="true"] {
                 color: #1b5e35 !important;
                 border-bottom: 3px solid #1b5e35 !important;
                 background-color: #f0faf3 !important;
             }
+
             .stTabs [data-baseweb="tab"]:hover {
                 color: #1b5e35 !important;
                 background-color: #f0faf3 !important;
             }
 
-            /*  Supprime les 2 traits gris sous les onglets  */
-            .stTabs [data-baseweb="tab-highlight"] { display: none !important; }
-            .stTabs [data-baseweb="tab-border"]    { display: none !important; }
+            .stTabs [data-baseweb="tab-highlight"] {
+                display: none !important;
+            }
 
-            /*  Sidebar  */
+            .stTabs [data-baseweb="tab-border"] {
+                display: none !important;
+            }
+
+            /* Sidebar */
             [data-testid="stSidebar"] {
                 background-color: #f8faf9;
                 border-right: 1px solid #e5e7eb;
             }
 
-            /*  Boutons de téléchargement  */
-            .stDownloadButton > button {
-                border: 1px solid #1b5e35 !important;
-                color: #1b5e35 !important;
-                background-color: white !important;
-                font-weight: 500 !important;
-                border-radius: 6px !important;
-            }
-            .stDownloadButton > button:hover {
-                background-color: #1b5e35 !important;
-                color: white !important;
-            }
-
-            /*  Header  */
+            /* Header */
             [data-testid="stHeader"] {
                 background-color: #ffffff !important;
                 border-bottom: 1px solid #e5e7eb !important;
             }
+
             [data-testid="stHeader"]::before {
                 content: "Flore Pyrénéenne - Simulation des Habitats";
                 display: block;
@@ -90,27 +127,57 @@ def inject_styles() -> None:
                 white-space: nowrap;
             }
 
-            /*  Toolbar : cache les boutons internes SAUF le bouton sidebar  */
-            [data-testid="stToolbar"] {
-                background-color: transparent !important;
-            }
-            /* Cache le menu hamburger (3 points) et le bouton étoile */
+            /* Cache les 3 points + Deploy */
             [data-testid="stToolbarActions"] {
                 display: none !important;
+                visibility: hidden !important;
             }
-            /* Garde uniquement le bouton de toggle sidebar visible */
+
+            #MainMenu {
+                display: none !important;
+                visibility: hidden !important;
+            }
+
+            /* Toggle sidebar toujours visible */
             [data-testid="stSidebarCollapsedControl"] {
                 display: flex !important;
-                z-index: 999 !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                z-index: 9999 !important;
             }
 
-            /*  Supprime la barre de décoration colorée en haut  */
-            [data-testid="stDecoration"] { display: none !important; }
+            /* Barre de décoration */
+            [data-testid="stDecoration"] {
+                display: none !important;
+            }
 
-            /*  Padding global  */
+            /* Padding global */
             .block-container {
                 padding-top: 4rem !important;
                 padding-bottom: 2rem !important;
+            }
+
+            /* Impression */
+            @media print {
+                [data-testid="stSidebar"] {
+                    display: none !important;
+                }
+
+                [data-testid="stHeader"] {
+                    display: none !important;
+                }
+
+                [data-testid="stDecoration"] {
+                    display: none !important;
+                }
+
+                [data-testid="stToolbar"] {
+                    display: none !important;
+                }
+
+                .block-container {
+                    padding-top: 0.5rem !important;
+                }
             }
         </style>
         """,

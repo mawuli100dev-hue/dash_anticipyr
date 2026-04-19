@@ -51,7 +51,7 @@ def render_sidebar() -> tuple[str, str, str, str | None, str]:
         )
         st.divider()
 
-        #  Espèce 
+        #  Espèce
         st.markdown(
             "<p style='font-size:0.82rem;font-weight:600;color:#374151;margin-bottom:4px;'>"
             "Espèce étudiée</p>",
