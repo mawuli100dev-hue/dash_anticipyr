@@ -135,18 +135,26 @@ def render_map_section(
     # ------------------------------------------------------------------
     st.markdown("#### Carte interactive")
 
-    fond_choisi = st.radio(
-        label="Fond de carte",
-        options=["Plan", "Satellite"],
-        index=0,
-        horizontal=True,
-        key=f"fond_carte_{espece}_{periode_cle}_{ssp_choisi}",
-    )
+    col_fond, col_opacite = st.columns([1, 2])
 
-    st.caption(
-        "Zoom avant libre jusqu'aux villages. "
-        "Zoom arrière limité à la région pyrénéenne."
-    )
+    with col_fond:
+        fond_choisi = st.radio(
+            label="Fond de carte",
+            options=["Plan", "Satellite"],
+            index=0,
+            horizontal=True,
+            key=f"fond_carte_{espece}_{periode_cle}_{ssp_choisi}",
+        )
+
+    with col_opacite:
+        opacite = st.slider(
+            label="Opacité de la prédiction",
+            min_value=0.0,
+            max_value=1.0,
+            value=0.7,          # valeur par défaut
+            step=0.05,
+            key=f"opacite_{espece}_{periode_cle}_{ssp_choisi}",
+        )
 
     # ------------------------------------------------------------------
     # Carte Folium interactive - sans LayerControl
@@ -156,6 +164,19 @@ def render_map_section(
         bounds,
         mode=mode_figure,
         fond=fond_choisi,
+        opacite=opacite,      # nouveau paramètre
+    )
+
+    st.markdown(
+        """
+        <style>
+        iframe[title="streamlit_folium.st_folium"] {
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
     )
 
     st_folium(

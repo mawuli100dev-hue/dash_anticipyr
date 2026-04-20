@@ -226,8 +226,9 @@ def creer_carte_folium(
     data: np.ndarray,
     bounds,
     mode: str = "continu",
-    fond: str = "Plan",          # "Plan" ou "Satellite"
-) -> folium.Map:
+    fond: str = "Plan",
+    opacite: float = 0.7,     # nouveau paramètre
+    ) -> folium.Map:
 
     # 1. Raster -> image PNG base64
     img_pil = _raster_vers_image_rgba(data, mode)
@@ -295,7 +296,7 @@ def creer_carte_folium(
     folium.raster_layers.ImageOverlay(
         image=img_url,
         bounds=image_bounds,
-        opacity=0.7,
+        opacity=opacite,
         interactive=False,
         cross_origin=False,
         zindex=2,
