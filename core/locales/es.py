@@ -22,7 +22,7 @@ TEXTES_ES: dict[str, str] = {
     "sidebar_ssp_label":        "Escenario climático (SSP)",
     "sidebar_mode_label":       "Modo de visualización",
     "sidebar_mode_help":        "Continuo: probabilidad de presencia entre 0 y 1  |  Ausencia/Presencia: mapa binarizado (datos ya 0/1)",
-    "sidebar_footer":           "ANTICI'PYR · Flora Pirenaica<br>Universidad de Perpiñán Via Domitia",
+    "sidebar_footer":           "ANTICI'PYR",
     "ssp_126_desc":             "Optimista",
     "ssp_245_desc":             "Intermedio",
     "ssp_370_desc":             "Pesimista",

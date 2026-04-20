@@ -290,4 +290,28 @@ def render_sidebar() -> tuple[str, str, str, str | None, str]:
             unsafe_allow_html=True,
         )
 
+         # Logos partenaires - 2 lignes de 4
+        _LOGOS_DIR = Path(__file__).resolve().parent.parent / "data" / "logos"
+
+        logos = sorted(_LOGOS_DIR.glob("*.png"), key=lambda p: p.name)
+
+        if logos:
+            st.markdown(
+                "<hr style='margin: 6px 0 8px 0; border: none; "
+                "border-top: 1px solid #e5e7eb;' />",
+                unsafe_allow_html=True,
+            )
+            for i in range(0, len(logos), 4):
+                cols = st.columns(4)
+                for col, logo_path in zip(cols, logos[i:i+4]):
+                    with open(logo_path, "rb") as f:
+                        b64 = base64.b64encode(f.read()).decode("utf-8")
+                    with col:
+                        st.markdown(
+                            f'<img src="data:image/png;base64,{b64}" '
+                            f'style="width:100%;max-height:36px;object-fit:contain;" '
+                            f'alt="{logo_path.stem}" />',
+                            unsafe_allow_html=True,
+                        )
+
     return espece, periode_label, periode_cle, ssp_choisi, mode_visu
