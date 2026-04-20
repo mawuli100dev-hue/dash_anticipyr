@@ -1,3 +1,4 @@
+# ui\map_section.py
 from __future__ import annotations
 
 import streamlit as st
@@ -13,13 +14,12 @@ from dash_anticipyr.core.raster import (
     creer_carte_folium,
     figure_en_bytes,
 )
-
 from dash_anticipyr.core.translations import t, get_langue_courante
 
-@st.cache_data(show_spinner=False)
-def _bytes_export(chemin_str: str, titre: str, mode: str, fmt: str, fond: str, langue: str) -> bytes:
+
+def _bytes_export(chemin_str: str, titre: str, mode: str, fmt: str, fond: str, langue: str, opacite: float) -> bytes:
     data, bounds = charger_raster(chemin_str)
-    fig = creer_figure(data, bounds, titre, mode=mode, fond=fond)
+    fig = creer_figure(data, bounds, titre, mode=mode, fond=fond, opacite=opacite)
     return figure_en_bytes(fig, fmt)
 
 
@@ -114,7 +114,6 @@ def render_map_section(
 
     col_fond, col_opacite = st.columns([1, 2])
 
-    # Clés internes stables - indépendantes de la langue
     OPTIONS_FOND = {
         "plan": t("map_fond_plan"),
         "satellite": t("map_fond_satellite"),
@@ -146,6 +145,7 @@ def render_map_section(
         mode=mode_figure,
         fond=fond_cle,
         opacite=opacite,
+        langue=get_langue_courante(),
     )
 
     st.markdown(
@@ -165,6 +165,7 @@ def render_map_section(
         use_container_width=True,
         height=600,
         returned_objects=[],
+        key=f"folium_{espece}_{periode_cle}_{ssp_choisi}_{mode_figure}_{fond_cle}_{get_langue_courante()}",
     )
 
     st.divider()
@@ -173,12 +174,13 @@ def render_map_section(
 
     nom_fichier = construire_nom_fichier(espece, periode_label, ssp_choisi, est_binaire)
     chemin_str = str(chemin_tif)
+    langue = get_langue_courante()
 
     dl1, dl2, dl3, dl4 = st.columns(4)
 
     with dl1:
         with st.spinner(t("map_export_spinner")):
-            png_data = _bytes_export(chemin_str, titre_carte, mode_figure, "png", fond_cle, get_langue_courante())
+            png_data = _bytes_export(chemin_str, titre_carte, mode_figure, "png", fond_cle, langue, opacite)
         st.download_button(
             label="PNG",
             data=png_data,
@@ -189,7 +191,7 @@ def render_map_section(
 
     with dl2:
         with st.spinner(t("map_export_spinner")):
-            jpg_data = _bytes_export(chemin_str, titre_carte, mode_figure, "jpeg", fond_cle, get_langue_courante())
+            jpg_data = _bytes_export(chemin_str, titre_carte, mode_figure, "jpeg", fond_cle, langue, opacite)
         st.download_button(
             label="JPG",
             data=jpg_data,
@@ -200,7 +202,7 @@ def render_map_section(
 
     with dl3:
         with st.spinner(t("map_export_spinner")):
-            pdf_data = _bytes_export(chemin_str, titre_carte, mode_figure, "pdf", fond_cle, get_langue_courante())
+            pdf_data = _bytes_export(chemin_str, titre_carte, mode_figure, "pdf", fond_cle, langue, opacite)
         st.download_button(
             label="PDF",
             data=pdf_data,

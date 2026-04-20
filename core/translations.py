@@ -13,12 +13,12 @@ TEXTES: dict[str, dict[str, str]] = {
     "fr": {
 
         # --- app.py ---
-        "page_title":               "Flore Pyrénéenne - Habitats",
-        "main_subtitle":            "Projection bioclimatique des espèces endémiques pyrénéennes",
+        "page_title":               "Flore Pyrénéenne - cartes de répartition",
+        "main_subtitle":            "Projection de la répartition des conditions climatiques favorables et défavorables aux espèces pyrénéennes",
         "btn_imprimer":             "Imprimer",
         "btn_imprimer_help":        "Télécharger la fiche PDF complète ou Ctrl+P",
         "btn_imprimer_loading":     "Chargement en cours...",
-        "tab_carte":                "Carte de distribution",
+        "tab_carte":                "Carte de repartition",
         "tab_ssp":                  "Scénarios SSP",
 
         # --- sidebar.py ---
@@ -70,11 +70,17 @@ TEXTES: dict[str, dict[str, str]] = {
         "cbar_binaire_label":       "Favorable / Pas favorable",
         "cbar_binaire_0":           "Pas favorable (0)",
         "cbar_binaire_1":           "Favorable (1)",
+        "legende_continu_titre":    "Probabilité de présence",
+        "legende_continu_min":      "Pas favorable",
+        "legende_continu_max":      "Très favorable",
+        "legende_binaire_titre":    "Habitat",
+        "legende_binaire_0":        "Défavorable",
+        "legende_binaire_1":        "Favorable",
 
         # --- ssp_info.py ---
         "ssp_page_titre":           "## Scénarios climatiques (SSPs)",
-        "ssp_intro":                "Les **SSPs** (Shared Socioeconomic Pathways) décrivent des trajectoires socio-économiques menant à différents niveaux d'émissions de gaz à effet de serre. Ce tableau de bord utilise quatre scénarios pour projeter l'évolution des habitats des espèces pyrénéennes jusqu'en 2090.",
-        "ssp_recap_titre":          "### Récapitulatif à l'horizon 2090",
+        "ssp_intro":                "Les **SSPs** (Shared Socioeconomic Pathways) décrivent des trajectoires socio-économiques menant à différents niveaux d'émissions de gaz à effet de serre. Ce tableau de bord présente les conditions climatiques favorables aux espèces pyrénéennes, projetées selon quatre scénarios climatiques jusqu’à la période 2081–2100.",
+        "ssp_recap_titre":          "### Récapitulatif des conditions climatiques projetée à l'horizon 2081-2100, en moyenne sur la chaine des Pyrénées",
         "ssp_recap_col_ssp":        "SSP",
         "ssp_recap_col_emissions":  "Émissions",
         "ssp_recap_col_dt":         "Delta T (°C)",
@@ -89,10 +95,10 @@ TEXTES: dict[str, dict[str, str]] = {
         "ssp_245_label":            "Émissions intermédiaires",
         "ssp_370_label":            "Émissions élevées",
         "ssp_585_label":            "Émissions très élevées",
-        "ssp_126_description":      "Scénario optimiste : forte mitigation climatique, émissions proches de zéro avant 2100.",
-        "ssp_245_description":      "Scénario intermédiaire : politiques climatiques partielles, stabilisation en cours de siècle.",
-        "ssp_370_description":      "Scénario pessimiste : faible coopération internationale, émissions en hausse continue.",
-        "ssp_585_description":      "Scénario extrême : dépendance massive aux énergies fossiles, aucune mitigation.",
+        "ssp_126_description": "Scénario optimiste avec politiques climatiques fortes, conduisant à des émissions très faibles d'ici 2100.",
+        "ssp_245_description": "Scénario intermédiaire avec des politiques climatiques limitées, entraînant une stabilisation progressive des émissions.",
+        "ssp_370_description": "Scénario pessimiste marqué par une faible coopération internationale et une augmentation continue des émissions.",
+        "ssp_585_description": "Scénario extrême caractérisé par une forte dépendance aux énergies fossiles et des émissions très élevées.",
         "ssp_temperature":          "Température (2090) :",
         "ssp_precipitations":       "Précipitations (2090) :",
 
@@ -116,8 +122,8 @@ TEXTES: dict[str, dict[str, str]] = {
     "en": {
 
         # --- app.py ---
-        "page_title":               "Pyrenean Flora - Habitats",
-        "main_subtitle":            "Bioclimatic projection of endemic Pyrenean species",
+        "page_title":               "Pyrenean Flora - distribution maps",
+        "main_subtitle":            "Projection of the distribution of favourable and unfavourable climatic conditions for Pyrenean species.",
         "btn_imprimer":             "Print",
         "btn_imprimer_help":        "Download the full PDF report or Ctrl+P",
         "btn_imprimer_loading":     "Loading...",
@@ -173,11 +179,17 @@ TEXTES: dict[str, dict[str, str]] = {
         "cbar_binaire_label":       "Suitable / Unsuitable",
         "cbar_binaire_0":           "Unsuitable (0)",
         "cbar_binaire_1":           "Suitable (1)",
+        "legende_continu_titre":  "Presence probability",
+        "legende_continu_min":      "Unsuitable",
+        "legende_continu_max":      "Highly suitable",
+        "legende_binaire_titre":  "Habitat",
+        "legende_binaire_0":      "Unfavourable",
+        "legende_binaire_1":      "Favourable",
 
         # --- ssp_info.py ---
         "ssp_page_titre":           "## Climate scenarios (SSPs)",
-        "ssp_intro":                "**SSPs** (Shared Socioeconomic Pathways) describe socioeconomic trajectories leading to different greenhouse gas emission levels. This dashboard uses four scenarios to project the evolution of Pyrenean endemic species habitats up to 2090.",
-        "ssp_recap_titre":          "### Summary at 2090 horizon",
+        "ssp_intro":                "**SSPs** (Shared Socioeconomic Pathways) describe socioeconomic trajectories leading to different levels of greenhouse gas emissions. This dashboard presents the climatic conditions favourable to Pyrenean species, projected under four climate scenarios up to the period 2081-2100.",
+        "ssp_recap_titre":          "### Summary of projected climatic conditions for the 2081-2100 horizon, averaged across the Pyrenean range.",
         "ssp_recap_col_ssp":        "SSP",
         "ssp_recap_col_emissions":  "Emissions",
         "ssp_recap_col_dt":         "Delta T (°C)",
@@ -192,10 +204,10 @@ TEXTES: dict[str, dict[str, str]] = {
         "ssp_245_label":            "Intermediate emissions",
         "ssp_370_label":            "High emissions",
         "ssp_585_label":            "Very high emissions",
-        "ssp_126_description":      "Optimistic scenario: strong climate mitigation, emissions near zero before 2100.",
-        "ssp_245_description":      "Intermediate scenario: partial climate policies, stabilisation during the century.",
-        "ssp_370_description":      "Pessimistic scenario: low international cooperation, continuously rising emissions.",
-        "ssp_585_description":      "Extreme scenario: massive fossil fuel dependency, no mitigation.",
+        "ssp_126_description": "Optimistic scenario with strong climate policies, leading to very low emissions by 2100.",
+        "ssp_245_description": "Intermediate scenario with limited climate policies, resulting in a gradual stabilisation of emissions.",
+        "ssp_370_description": "Pessimistic scenario marked by low international cooperation and a continuous rise in emissions.",
+        "ssp_585_description": "Extreme scenario characterised by heavy dependence on fossil fuels and very high emissions.",
         "ssp_temperature":          "Temperature (2090):",
         "ssp_precipitations":       "Precipitation (2090):",
 
@@ -218,8 +230,8 @@ TEXTES: dict[str, dict[str, str]] = {
     "es": {
 
         # --- app.py ---
-        "page_title":               "Flora Pirenaica - Hábitats",
-        "main_subtitle":            "Proyección bioclimática de las especies endémicas pirenaicas",
+        "page_title":               "Flora Pirenaica - mapas de distribución",
+        "main_subtitle":            "Proyección de la distribución de las condiciones climáticas favorables y desfavorables para las especies pirenaicas.",
         "btn_imprimer":             "Imprimir",
         "btn_imprimer_help":        "Descargar el informe PDF completo o Ctrl+P",
         "btn_imprimer_loading":     "Cargando...",
@@ -275,11 +287,17 @@ TEXTES: dict[str, dict[str, str]] = {
         "cbar_binaire_label":       "Favorable / No favorable",
         "cbar_binaire_0":           "No favorable (0)",
         "cbar_binaire_1":           "Favorable (1)",
+        "legende_continu_titre":    "Probabilidad de presencia",
+        "legende_continu_min":         "No favorable",
+        "legende_continu_max":         "Muy favorable",
+        "legende_binaire_titre":    "Hábitat",
+        "legende_binaire_0":        "Desfavorable",
+        "legende_binaire_1":        "Favorable",
 
         # --- ssp_info.py ---
         "ssp_page_titre":           "## Escenarios climáticos (SSPs)",
-        "ssp_intro":                "Los **SSPs** (Shared Socioeconomic Pathways) describen trayectorias socioeconómicas que conducen a diferentes niveles de emisiones de gases de efecto invernadero. Este panel utiliza cuatro escenarios para proyectar la evolución de los hábitats de las especies pirenaicas hasta 2090.",
-        "ssp_recap_titre":          "### Resumen a horizonte 2090",
+        "ssp_intro":                "Los **SSPs** (Shared Socioeconomic Pathways) describen trayectorias socioeconómicas que conducen a diferentes niveles de emisiones de gases de efecto invernadero. Este panel presenta las condiciones climáticas favorables para las especies pirenaicas, proyectadas según cuatro escenarios climáticos hasta el periodo 2081-2100.",
+        "ssp_recap_titre":          "### Resumen de las condiciones climáticas proyectadas para el horizonte 2081-2100, promediadas sobre la cadena pirenaica.",
         "ssp_recap_col_ssp":        "SSP",
         "ssp_recap_col_emissions":  "Emisiones",
         "ssp_recap_col_dt":         "Delta T (°C)",
@@ -294,10 +312,10 @@ TEXTES: dict[str, dict[str, str]] = {
         "ssp_245_label":            "Emisiones intermedias",
         "ssp_370_label":            "Emisiones elevadas",
         "ssp_585_label":            "Emisiones muy elevadas",
-        "ssp_126_description":      "Escenario optimista: fuerte mitigación climática, emisiones próximas a cero antes de 2100.",
-        "ssp_245_description":      "Escenario intermedio: políticas climáticas parciales, estabilización a mitad de siglo.",
-        "ssp_370_description":      "Escenario pesimista: escasa cooperación internacional, emisiones en aumento continuo.",
-        "ssp_585_description":      "Escenario extremo: dependencia masiva de combustibles fósiles, sin mitigación.",
+        "ssp_126_description":      "Escenario optimista con políticas climáticas sólidas, que conduce a emisiones muy bajas antes de 2100.",
+        "ssp_245_description":      "Escenario intermedio con políticas climáticas limitadas, que resulta en una estabilización progresiva de las emisiones.",
+        "ssp_370_description":      "Escenario pesimista marcado por una escasa cooperación internacional y un aumento continuo de las emisiones.",
+        "ssp_585_description":      "Escenario extremo caracterizado por una fuerte dependencia de los combustibles fósiles y emisiones muy elevadas.",
         "ssp_temperature":          "Temperatura (2090):",
         "ssp_precipitations":       "Precipitaciones (2090):",
 
@@ -320,8 +338,8 @@ TEXTES: dict[str, dict[str, str]] = {
     "ca": {
 
         # --- app.py ---
-        "page_title":               "Flora Pirinenca - Hàbitats",
-        "main_subtitle":            "Projecció bioclimàtica de les espècies endèmiques pirinenques",
+        "page_title":               "Flora Pirinenca - mapes de distribució",
+        "main_subtitle":            "Projecció de la distribució de les condicions climàtiques favorables i desfavorables per a les espècies pirinenques.",
         "btn_imprimer":             "Imprimir",
         "btn_imprimer_help":        "Descarregar l'informe PDF complet o Ctrl+P",
         "btn_imprimer_loading":     "Carregant...",
@@ -377,11 +395,17 @@ TEXTES: dict[str, dict[str, str]] = {
         "cbar_binaire_label":       "Favorable / No favorable",
         "cbar_binaire_0":           "No favorable (0)",
         "cbar_binaire_1":           "Favorable (1)",
+        "legende_continu_titre":    "Probabilitat de presència",
+        "legende_continu_min":      "No favorable",
+        "legende_continu_max":      "Molt favorable",
+        "legende_binaire_titre":    "Hàbitat",
+        "legende_binaire_0":        "Desfavorable",
+        "legende_binaire_1":        "Favorable",
 
         # --- ssp_info.py ---
         "ssp_page_titre":           "## Escenaris climàtics (SSPs)",
-        "ssp_intro":                "Els **SSPs** (Shared Socioeconomic Pathways) descriuen trajectòries socioeconòmiques que condueixen a diferents nivells d'emissions de gasos d'efecte hivernacle. Aquest tauler utilitza quatre escenaris per projectar l'evolució dels hàbitats de les espècies pirinenques fins al 2090.",
-        "ssp_recap_titre":          "### Resum a l'horitzó 2090",
+        "ssp_intro":                "Els **SSPs** (Shared Socioeconomic Pathways) descriuen trajectòries socioeconòmiques que condueixen a diferents nivells d'emissions de gasos d'efecte hivernacle. Aquest tauler presenta les condicions climàtiques favorables per a les espècies pirinenques, projectades segons quatre escenaris climàtics fins al període 2081-2100.",
+        "ssp_recap_titre":          "### Resum de les condicions climàtiques projectades per a l'horitzó 2081-2100, mitjançades sobre la serralada dels Pirineus.",
         "ssp_recap_col_ssp":        "SSP",
         "ssp_recap_col_emissions":  "Emissions",
         "ssp_recap_col_dt":         "Delta T (°C)",
@@ -396,15 +420,29 @@ TEXTES: dict[str, dict[str, str]] = {
         "ssp_245_label":            "Emissions intermèdies",
         "ssp_370_label":            "Emissions elevades",
         "ssp_585_label":            "Emissions molt elevades",
-        "ssp_126_description":      "Escenari optimista: forta mitigació climàtica, emissions properes a zero abans del 2100.",
-        "ssp_245_description":      "Escenari intermedi: polítiques climàtiques parcials, estabilització a mitjan segle.",
-        "ssp_370_description":      "Escenari pessimista: escassa cooperació internacional, emissions en augment continu.",
-        "ssp_585_description":      "Escenari extrem: dependència massiva dels combustibles fòssils, sense mitigació.",
-        "ssp_temperature":          "Temperatura (2090):",
+        "ssp_126_description": "Escenari optimista amb polítiques climàtiques fortes, que condueix a emissions molt baixes abans de 2100.",
+        "ssp_245_description": "Escenari intermedi amb polítiques climàtiques limitades, que dona lloc a una estabilització progressiva de les emissions.",
+        "ssp_370_description": "Escenari pessimista marcat per una baixa cooperació internacional i un augment continu de les emissions.",
+        "ssp_585_description": "Escenari extrem caracteritzat per una forta dependència dels combustibles fòssils i emissions molt elevades.",
+        "ssp_temperature":        "Temperatura (2090):",
         "ssp_precipitations":       "Precipitacions (2090):",
+
+        "howto_step1_titre": "Triar una espècie",
+        "howto_step1_desc":  "Seleccioneu una espècie en aquesta llista per carregar els seus mapes de distribució.",
+        "howto_step2_titre": "Triar un període",
+        "howto_step2_desc":  "Seleccioneu el període temporal: actual o una projecció futura.",
+        "howto_step3_titre": "Triar un escenari",
+        "howto_step3_desc":  "Per a un període futur, trieu un escenari climàtic SSP.",
+        "howto_step4_titre": "Explorar el mapa",
+        "howto_step4_desc":  "Navegueu entre el mapa interactiu i la informació sobre els escenaris.",
+        "howto_step5_titre": "Descarregar",
+        "howto_step5_desc":  "Exporteu el mapa en PNG, JPG, PDF o TIF amb el fons de mapa triat.",
+        "howto_next":        "Següent →",
+        "howto_prev":        "← Anterior",
+        "howto_fermer":      "Acabar",
+        "howto_btn":         "Com utilitzar?",
     },
 }
-
 
 # ---------------------------------------------------------------------------
 # Initialisation de la langue dans session_state

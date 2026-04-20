@@ -14,6 +14,7 @@ from dash_anticipyr.ui.map_section import render_map_section
 from dash_anticipyr.core.session import generer_pdf_session
 from dash_anticipyr.ui.sidebar import render_sidebar
 from dash_anticipyr.ui.ssp_info import render_ssp_info
+from dash_anticipyr.ui.interpretation import render_interpretation
 from dash_anticipyr.core.translations import init_langue, t
 
 
@@ -64,13 +65,16 @@ def main() -> None:
                 use_container_width=True,
             )
 
-    tab_carte, tab_ssp = st.tabs([t("tab_carte"), t("tab_ssp")])
+    tab_carte, tab_ssp, tab_interp = st.tabs([t("tab_carte"), t("tab_ssp"), "Interprétation"])
 
     with tab_carte:
         render_map_section(espece, periode_label, periode_cle, ssp_choisi, mode_visu)
 
     with tab_ssp:
         render_ssp_info()
+
+    with tab_interp:
+        render_interpretation()
 
 
 if __name__ == "__main__":

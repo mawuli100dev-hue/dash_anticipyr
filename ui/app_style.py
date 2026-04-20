@@ -181,6 +181,15 @@ def inject_styles() -> None:
                     padding-top: 0.5rem !important;
                 }}
             }}
+
+            /* Bouton d'impression : jamais de retour à la ligne */
+            [data-testid="stDownloadButton"] button,
+            [data-testid="stButton"] button {{
+                white-space: nowrap !important;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                min-width: 0;
+            }}
         </style>
         """,
         unsafe_allow_html=True,

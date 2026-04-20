@@ -1,9 +1,13 @@
+# core\raster.py
 from __future__ import annotations
 
 import io
+import os
 import base64
 from pathlib import Path
 from typing import Tuple
+
+import math
 
 import matplotlib
 matplotlib.use("Agg")
@@ -19,6 +23,8 @@ import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 import contextily as ctx
 import folium
+import fiona
+from shapely.geometry import shape
 
 from dash_anticipyr.core.translations import t
 
@@ -35,6 +41,8 @@ _CTX_SOURCES = {
     "plan": ctx.providers.OpenStreetMap.Mapnik,
     "satellite": ctx.providers.Esri.WorldImagery,
 }
+
+SHAPEFILE_PYRENEES = Path(__file__).parent.parent / "data" / "border" / "polygon_PYRENEES.shp"
 
 
 # ---------------------------------------------------------------------------
@@ -86,6 +94,18 @@ def charger_raster(chemin_tif: str) -> Tuple[np.ndarray, rasterio.coords.Boundin
 
 
 # ---------------------------------------------------------------------------
+# Utilitaire shapefile Pyrénées (sans pyproj/CRS)
+# ---------------------------------------------------------------------------
+
+@st.cache_data
+def _charger_geometries_pyrenees() -> list:
+    if not SHAPEFILE_PYRENEES.exists():
+        return []
+    with fiona.open(str(SHAPEFILE_PYRENEES)) as src:
+        return [shape(feat["geometry"]) for feat in src]
+
+
+# ---------------------------------------------------------------------------
 # V1 - Figure statique Cartopy
 # ---------------------------------------------------------------------------
 
@@ -111,26 +131,43 @@ def creer_figure(
     titre: str,
     mode: str = "continu",
     fond: str = "plan",
+    opacite: float = 0.7,
 ) -> plt.Figure:
-    """Figure statique Cartopy - conservée pour les exports PNG/JPG/PDF."""
-    proj = ccrs.PlateCarree()
-    fig, ax = plt.subplots(figsize=(16, 9), subplot_kw={"projection": proj})
+
+    # 1. On sépare la projection d'affichage de la projection des données
+    data_proj = ccrs.PlateCarree()  # Format des données (EPSG:4326)
+    map_proj = ccrs.epsg(3857)  # Format d'affichage (EPSG:3857 - comme Folium)
+
+    # Ratio géographique réel pour dimensionner la figure (approx)
+    lat_moy = (bounds.top + bounds.bottom) / 2.0
+    ratio_geo = (
+        (bounds.right - bounds.left) * math.cos(math.radians(lat_moy))
+    ) / (bounds.top - bounds.bottom)
+    largeur_fig = 16
+    hauteur_fig = largeur_fig / ratio_geo
+
+    # 2. On applique WebMercator à la création de l'axe
+    fig, ax = plt.subplots(figsize=(largeur_fig, hauteur_fig), subplot_kw={"projection": map_proj})
     masked = np.ma.masked_invalid(data)
 
-    ax.set_extent([bounds.left, bounds.right, bounds.bottom, bounds.top], crs=proj)
+    # 3. L'étendue (les limites) est fournie en coordonnées géo, donc avec data_proj
+    ax.set_extent([bounds.left, bounds.right, bounds.bottom, bounds.top], crs=data_proj)
+
+    # ATTENTION : On supprime la ligne `ax.set_aspect(...)` car la projection WebMercator
+    # gère toute seule les bonnes proportions géographiques.
 
     try:
         source = _CTX_SOURCES.get(fond, ctx.providers.OpenStreetMap.Mapnik)
         ctx.add_basemap(
             ax,
-            crs=proj,
+            crs="EPSG:3857", # 4. Indiquer à contextily que l'axe est en WebMercator
             source=source,
             zoom="auto",
             attribution=False,
         )
-    except Exception:
-        ax.add_feature(cfeature.BORDERS, linewidth=0.6, edgecolor="#555555")
-        ax.add_feature(cfeature.COASTLINE, linewidth=0.6, edgecolor="#555555")
+    except Exception as e:
+        import sys
+        print(f"[WARN] basemap échoué : {type(e).__name__}: {e}", file=sys.stderr)
 
     ax.add_feature(cfeature.BORDERS, linewidth=0.6, edgecolor="#555555")
     ax.add_feature(cfeature.COASTLINE, linewidth=0.6, edgecolor="#555555")
@@ -140,12 +177,12 @@ def creer_figure(
             masked,
             cmap="viridis",
             extent=[bounds.left, bounds.right, bounds.bottom, bounds.top],
-            transform=proj,
+            transform=data_proj, # 5. L'image (le TIF) est projetée via data_proj
             origin="upper",
             vmin=0.0,
             vmax=1.0,
             interpolation="nearest",
-            alpha=0.7,
+            alpha=opacite,
             zorder=5,
         )
         cbar = fig.colorbar(img, ax=ax, fraction=0.012, pad=0.03, shrink=0.8)
@@ -156,17 +193,17 @@ def creer_figure(
             fontsize=9,
         )
     elif mode == "binaire":
-        cmap_bin = mcolors.ListedColormap(["#4393c3", "#2e7d32"])
+        cmap_bin = mcolors.ListedColormap(["#4393c3", "#f0c92b"])
         img = ax.imshow(
             masked,
             cmap=cmap_bin,
             extent=[bounds.left, bounds.right, bounds.bottom, bounds.top],
-            transform=proj,
+            transform=data_proj, # 5. Idem ici
             origin="upper",
             vmin=-0.5,
             vmax=1.5,
             interpolation="nearest",
-            alpha=0.7,
+            alpha=opacite,
             zorder=5,
         )
         cbar = fig.colorbar(img, ax=ax, fraction=0.012, pad=0.03, shrink=0.8, ticks=[0, 1])
@@ -180,6 +217,18 @@ def creer_figure(
     gl.right_labels = False
     gl.xlabel_style = {"size": 9}
     gl.ylabel_style = {"size": 9}
+
+    # Contour des Pyrénées (rouge)
+    geometries = _charger_geometries_pyrenees()
+    if geometries:
+        ax.add_geometries(
+            geometries,
+            crs=data_proj, # 6. Les coordonnées géométriques (shapefile) sont en EPSG:4326
+            facecolor="none",
+            edgecolor="red",
+            linewidth=1.5,
+            zorder=10,
+        )
 
     parties = titre.split("\u00b7", 1)
     if len(parties) == 2:
@@ -195,13 +244,14 @@ def creer_figure(
             reste_part = ""
 
     _ajouter_titre(fig, ax, espece_part, reste_part)
-    fig.tight_layout()
+    fig.tight_layout(pad=1.5)
+
     return fig
 
 
 def figure_en_bytes(fig: plt.Figure, fmt: str, dpi: int = 150) -> bytes:
     buf = io.BytesIO()
-    fig.savefig(buf, format=fmt, dpi=dpi, bbox_inches="tight")
+    fig.savefig(buf, format=fmt, dpi=dpi)
     plt.close(fig)
     buf.seek(0)
     return buf.read()
@@ -214,7 +264,7 @@ def figure_en_bytes(fig: plt.Figure, fmt: str, dpi: int = 150) -> bytes:
 def _raster_vers_image_rgba(data: np.ndarray, mode: str = "continu") -> Image.Image:
     """
     Convertit le raster numpy en image RGBA pour l'overlay Folium.
-    NaN -> alpha=0, valeur valide -> alpha=180.
+    NaN -> alpha=0, valeur valide -> alpha=255 (opacité gérée par Folium).
     Downsample automatique si > 1024 px.
     """
     MAX_PIXELS = 1024
@@ -232,15 +282,73 @@ def _raster_vers_image_rgba(data: np.ndarray, mode: str = "continu") -> Image.Im
         norm = mcolors.Normalize(vmin=0.0, vmax=1.0)
         couleurs = cmap(norm(np.where(masque_valide, data, 0.0)))
     else:
-        cmap = mcolors.ListedColormap(["#4393c3", "#2e7d32"])
+        cmap = mcolors.ListedColormap(["#4393c3", "#f0c92b"])
         norm = mcolors.BoundaryNorm([-0.5, 0.5, 1.5], cmap.N)
         couleurs = cmap(norm(np.where(masque_valide, data, 0.0)))
 
     rgba[..., :3] = (couleurs[..., :3] * 255).astype(np.uint8)
-    rgba[masque_valide, 3] = 180
+    rgba[masque_valide, 3] = 255  # max, Folium gère le slider
     rgba[~masque_valide, 3] = 0
 
     return Image.fromarray(rgba, mode="RGBA")
+
+
+def _html_legende_continu(titre: str, label_min: str, label_max: str) -> str:
+    return f"""
+    <div style="position:fixed; bottom:30px; right:10px; z-index:1000;
+        background:white; border-radius:6px; padding:12px 16px;
+        box-shadow:0 2px 8px rgba(0,0,0,0.25); font-family:sans-serif;
+        font-size:12px; min-width:180px;">
+
+        <div style="font-weight:700; margin-bottom:8px; color:#333; font-size:13px;">
+            {titre}
+        </div>
+
+        <div style="
+            width:140px; height:14px; border-radius:3px;
+            background:linear-gradient(to right,#440154,#31688e,#35b779,#fde725);
+            border:1px solid #ccc;">
+        </div>
+
+        <div style="display:flex; justify-content:space-between; width:140px; margin-top:3px;">
+            <span style="color:#555;">0</span>
+            <span style="color:#555;">0.25</span>
+            <span style="color:#555;">0.50</span>
+            <span style="color:#555;">0.75</span>
+            <span style="color:#555;">1</span>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; width:140px; margin-top:2px;">
+            <span style="color:#888; font-size:10px; max-width:60px; line-height:1.2;">
+                {label_min}
+            </span>
+            <span style="color:#888; font-size:10px; max-width:60px; text-align:right; line-height:1.2;">
+                {label_max}
+            </span>
+        </div>
+    </div>
+    """
+
+
+def _html_legende_binaire(titre: str, label_0: str, label_1: str) -> str:
+    return f"""
+    <div style="position:fixed; bottom:30px; right:10px; z-index:1000;
+        background:white; border-radius:6px; padding:10px 14px;
+        box-shadow:0 2px 8px rgba(0,0,0,0.25); font-family:sans-serif;
+        font-size:12px; min-width:160px;">
+        <div style="font-weight:700; margin-bottom:8px; color:#333;">{titre}</div>
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:5px;">
+            <div style="width:16px; height:16px; background:#4393c3;
+                border-radius:3px; border:1px solid #ccc; flex-shrink:0;"></div>
+            <span style="color:#555;">{label_0}</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+            <div style="width:16px; height:16px; background:#f0c92b;
+                border-radius:3px; border:1px solid #ccc; flex-shrink:0;"></div>
+            <span style="color:#555;">{label_1}</span>
+        </div>
+    </div>
+    """
 
 
 def creer_carte_folium(
@@ -249,7 +357,22 @@ def creer_carte_folium(
     mode: str = "continu",
     fond: str = "plan",
     opacite: float = 0.7,
+    langue: str = "fr",
 ) -> folium.Map:
+
+    # Résolution des textes AVANT toute construction Folium
+    if mode == "continu":
+        html_leg = _html_legende_continu(
+            titre=t("legende_continu_titre"),
+            label_min=t("legende_continu_min").replace("\n", "<br>"),
+            label_max=t("legende_continu_max").replace("\n", "<br>"),
+        )
+    else:
+        html_leg = _html_legende_binaire(
+            titre=t("legende_binaire_titre"),
+            label_0=t("legende_binaire_0"),
+            label_1=t("legende_binaire_1"),
+        )
 
     img_pil = _raster_vers_image_rgba(data, mode)
     buf = io.BytesIO()
@@ -310,12 +433,35 @@ def creer_carte_folium(
     folium.raster_layers.ImageOverlay(
         image=img_url,
         bounds=image_bounds,
-        opacity=opacite,
+        opacity=opacite,   # slider Streamlit contrôle ici
         interactive=False,
         cross_origin=False,
         zindex=2,
     ).add_to(carte)
 
-    carte.fit_bounds(image_bounds)
+    # Contour des Pyrénées (rouge)
+    geometries = _charger_geometries_pyrenees()
+    if geometries:
+        geojson_data = {
+            "type": "FeatureCollection",
+            "features": [
+                {"type": "Feature", "geometry": geom.__geo_interface__, "properties": {}}
+                for geom in geometries
+            ],
+        }
+        folium.GeoJson(
+            geojson_data,
+            name="Pyrénées",
+            style_function=lambda _: {
+                "fillColor": "none",
+                "color": "red",
+                "weight": 2,
+                "fillOpacity": 0,
+            },
+        ).add_to(carte)
 
+    # Legende
+    carte.get_root().html.add_child(folium.Element(html_leg))
+
+    carte.fit_bounds(image_bounds)
     return carte
