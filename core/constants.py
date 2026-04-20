@@ -4,7 +4,7 @@ from typing import Dict, List
 
 # Correspondance : libellé affiché -> clé interne (current ou année de projection)
 PERIODES: Dict[str, str] = {
-    "1970–2000  (Actuelle)": "current",
+    "1970–2000": "current",
     "2021–2040": "2030",
     "2041–2060": "2050",
     "2061–2080": "2070",

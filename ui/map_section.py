@@ -13,15 +13,11 @@ from dash_anticipyr.core.raster import (
     creer_carte_folium,
     figure_en_bytes,
 )
+from dash_anticipyr.core.translations import t
 
 
-@st.cache_data(show_spinner="Génération de la carte export...")
+@st.cache_data(show_spinner=False)
 def _bytes_export(chemin_str: str, titre: str, mode: str, fmt: str) -> bytes:
-    """
-    Génère et retourne les bytes d'export dans le format demandé.
-    Cache basé sur : chemin TIF + titre + mode + format.
-    Aucun objet Cartopy n'est mis en cache, seulement des bytes.
-    """
     data, bounds = charger_raster(chemin_str)
     fig = creer_figure(data, bounds, titre, mode=mode)
     return figure_en_bytes(fig, fmt)
@@ -34,20 +30,9 @@ def render_map_section(
     ssp_choisi: str | None,
     mode_visu: str,
 ) -> None:
-    """
-    Rendu de la section carte - V2d.
-
-    Correction par rapport à V2c :
-    - Suppression du @st.cache_data sur la figure matplotlib (incompatible
-      avec Cartopy CRS -> TypeError au pickle)
-    - Cache déplacé sur _bytes_export() qui ne stocke que des bytes
-    """
     PHOTO_WIDTH_PX = 400
     photo_url, attribution = get_photo_espece(espece)
 
-    # ------------------------------------------------------------------
-    # Bloc photo + infos espèce
-    # ------------------------------------------------------------------
     if photo_url:
         col_photo, col_info = st.columns([1, 3])
         with col_photo:
@@ -72,8 +57,9 @@ def render_map_section(
                 unsafe_allow_html=True,
             )
             st.markdown(
-                f"**Période :** {periode_label}  \n"
-                f"**Scénario :** {ssp_choisi if ssp_choisi else 'Période actuelle'}"
+                f"**{t('map_periode_label')} :** {periode_label}  \n"
+                f"**{t('map_scenario_label')} :** "
+                f"{ssp_choisi if ssp_choisi else t('map_periode_actuelle')}"
             )
     else:
         st.markdown(
@@ -81,17 +67,15 @@ def render_map_section(
             unsafe_allow_html=True,
         )
         st.markdown(
-            f"**Période :** {periode_label}  \n"
-            f"**Scénario :** {ssp_choisi if ssp_choisi else 'Période actuelle'}"
+            f"**{t('map_periode_label')} :** {periode_label}  \n"
+            f"**{t('map_scenario_label')} :** "
+            f"{ssp_choisi if ssp_choisi else t('map_periode_actuelle')}"
         )
-        st.info("Aucune photo disponible sur iNaturalist pour cette espèce.")
+        st.info(t("map_no_photo"))
 
     st.divider()
 
-    # ------------------------------------------------------------------
-    # Résolution du chemin TIF
-    # ------------------------------------------------------------------
-    est_binaire = (mode_visu == "Absence/Présence")
+    est_binaire = mode_visu == t("mode_binaire")
     racine = data_cartographies_root()
 
     try:
@@ -103,44 +87,39 @@ def render_map_section(
         return
 
     if not chemin_tif.exists():
-        st.warning(
-            f"**Fichier introuvable :** \n`{chemin_tif}` \n\n"
-            "Vérifiez que les prédictions ont bien été générées pour cette combinaison."
-        )
+        st.warning(t("map_fichier_introuvable", chemin=chemin_tif))
         st.stop()
 
-    # ------------------------------------------------------------------
-    # Chargement du raster
-    # ------------------------------------------------------------------
     try:
         data, bounds = charger_raster(str(chemin_tif))
     except Exception as e:
-        st.error(f"Erreur lors de la lecture du fichier TIF : \n`{e}`")
+        st.error(t("map_erreur_tif", e=e))
         st.stop()
 
-    # ------------------------------------------------------------------
-    # Titre pour les exports
-    # ------------------------------------------------------------------
     if periode_cle == "current":
-        titre_carte = f"{espece}  ·  Période actuelle (1970-2000)"
+        titre_carte = t("map_titre_carte_current", espece=espece)
     else:
-        titre_carte = f"{espece}  ·  {periode_label} | {ssp_choisi}"
+        titre_carte = t(
+            "map_titre_carte_futur",
+            espece=espece,
+            periode=periode_label,
+            ssp=ssp_choisi,
+        )
     if est_binaire:
-        titre_carte += "  ·  Absence/Présence"
+        titre_carte += t("map_titre_binaire")
 
     mode_figure = "binaire" if est_binaire else "continu"
 
-    # ------------------------------------------------------------------
-    # Sélecteur de fond de carte (radio Streamlit)
-    # ------------------------------------------------------------------
-    st.markdown("#### Carte interactive")
+    st.markdown(f"#### {t('map_titre')}")
 
     col_fond, col_opacite = st.columns([1, 2])
 
+    options_fond = [t("map_fond_plan"), t("map_fond_satellite")]
+
     with col_fond:
-        fond_choisi = st.radio(
-            label="Fond de carte",
-            options=["Plan", "Satellite"],
+        fond_choisi_ui = st.radio(
+            label=t("map_fond_label"),
+            options=options_fond,
             index=0,
             horizontal=True,
             key=f"fond_carte_{espece}_{periode_cle}_{ssp_choisi}",
@@ -148,23 +127,22 @@ def render_map_section(
 
     with col_opacite:
         opacite = st.slider(
-            label="Opacité de la prédiction",
+            label=t("map_opacite_label"),
             min_value=0.0,
             max_value=1.0,
-            value=0.7,          # valeur par défaut
+            value=0.7,
             step=0.05,
             key=f"opacite_{espece}_{periode_cle}_{ssp_choisi}",
         )
 
-    # ------------------------------------------------------------------
-    # Carte Folium interactive - sans LayerControl
-    # ------------------------------------------------------------------
+    fond_choisi = "Plan" if fond_choisi_ui == t("map_fond_plan") else "Satellite"
+
     carte = creer_carte_folium(
         data,
         bounds,
         mode=mode_figure,
         fond=fond_choisi,
-        opacite=opacite,      # nouveau paramètre
+        opacite=opacite,
     )
 
     st.markdown(
@@ -188,43 +166,46 @@ def render_map_section(
 
     st.divider()
 
-    # ------------------------------------------------------------------
-    # Téléchargements
-    # Les bytes sont mis en cache par _bytes_export()
-    # La figure Cartopy est créée et détruite à l'intérieur de la
-    # fonction, jamais exposée au système de cache de Streamlit
-    # ------------------------------------------------------------------
-    st.markdown("#### Télécharger la carte sélectionnée")
+    st.markdown(f"#### {t('map_download_titre')}")
 
     nom_fichier = construire_nom_fichier(espece, periode_label, ssp_choisi, est_binaire)
-    chemin_str  = str(chemin_tif)
+    chemin_str = str(chemin_tif)
 
     dl1, dl2, dl3, dl4 = st.columns(4)
 
     with dl1:
+        with st.spinner(t("map_export_spinner")):
+            png_data = _bytes_export(chemin_str, titre_carte, mode_figure, "png")
         st.download_button(
             label="PNG",
-            data=_bytes_export(chemin_str, titre_carte, mode_figure, "png"),
+            data=png_data,
             file_name=f"{nom_fichier}.png",
             mime="image/png",
             use_container_width=True,
         )
+
     with dl2:
+        with st.spinner(t("map_export_spinner")):
+            jpg_data = _bytes_export(chemin_str, titre_carte, mode_figure, "jpeg")
         st.download_button(
             label="JPG",
-            data=_bytes_export(chemin_str, titre_carte, mode_figure, "jpeg"),
+            data=jpg_data,
             file_name=f"{nom_fichier}.jpg",
             mime="image/jpeg",
             use_container_width=True,
         )
+
     with dl3:
+        with st.spinner(t("map_export_spinner")):
+            pdf_data = _bytes_export(chemin_str, titre_carte, mode_figure, "pdf")
         st.download_button(
             label="PDF",
-            data=_bytes_export(chemin_str, titre_carte, mode_figure, "pdf"),
+            data=pdf_data,
             file_name=f"{nom_fichier}.pdf",
             mime="application/pdf",
             use_container_width=True,
         )
+
     with dl4:
         with open(chemin_tif, "rb") as f:
             tif_brut = f.read()

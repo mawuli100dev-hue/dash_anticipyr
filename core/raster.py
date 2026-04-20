@@ -28,26 +28,6 @@ PYRENEES_BOUNDS = [[41.5, -2.5], [43.8, 4.0]]
 MIN_ZOOM = 7
 MAX_ZOOM = 16
 
-# Définition des fonds de carte disponibles
-# Chaque entrée : (url_tuiles, attribution)
-FONDS_CARTE = {
-    "Plan": (
-        "OpenStreetMap",
-        "OpenStreetMap contributors",
-    ),
-    "Satellite": (
-        "https://server.arcgisonline.com/ArcGIS/rest/services/"
-        "World_Imagery/MapServer/tile/{z}/{y}/{x}",
-        "Esri World Imagery",
-    ),
-    "Satellite_labels": (
-        "https://server.arcgisonline.com/ArcGIS/rest/services/"
-        "Reference/World_Reference_Overlay/MapServer/tile/{z}/{y}/{x}",
-        "Esri World Reference Overlay",
-    ),
-}
-
-
 # ---------------------------------------------------------------------------
 # Utilitaires communs
 # ---------------------------------------------------------------------------
