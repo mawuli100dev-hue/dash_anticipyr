@@ -8,7 +8,7 @@ import streamlit as st
 from dash_anticipyr.core.constants import PERIODES, SSP_LIST
 from dash_anticipyr.core.paths import data_cartographies_root
 from dash_anticipyr.core.raster import lister_especes
-from dash_anticipyr.core.translations import LANGUES, init_langue, t
+from dash_anticipyr.core.translations import init_langue, t
 from dash_anticipyr.ui.sidebar_style import inject_sidebar_styles
 
 
