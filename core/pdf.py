@@ -8,6 +8,7 @@ from reportlab.lib.utils import ImageReader
 from reportlab.pdfgen import canvas
 
 from dash_anticipyr.core.raster import figure_en_bytes
+from dash_anticipyr.core.translations import t
 
 
 def telecharger_image(url: str) -> BytesIO | None:
@@ -52,12 +53,12 @@ def generer_pdf_complet(
     y = hauteur_page - marge
     c.setFont("Helvetica-Bold", 16)
     c.setFillColorRGB(0.106, 0.369, 0.208)
-    c.drawString(marge, y, "Flore Pyrénéenne - Simulation des Habitats")
+    c.drawString(marge, y, t("page_title"))
 
     y -= 22
     c.setFont("Helvetica-Oblique", 10)
     c.setFillColorRGB(0.42, 0.45, 0.50)
-    c.drawString(marge, y, "Projection bioclimatique des espèces endémiques pyrénéennes")
+    c.drawString(marge, y, t("main_subtitle"))
 
     y -= 18
     c.setStrokeColorRGB(0.85, 0.85, 0.85)
@@ -102,18 +103,22 @@ def generer_pdf_complet(
     c.setFillColorRGB(0.106, 0.369, 0.208)
     c.drawString(x_texte, y - 16, espece)
 
+    label_periode  = t("map_periode_label") + " :"
+    label_scenario = t("map_scenario_label") + " :"
+    valeur_scenario = ssp_choisi if ssp_choisi else t("map_periode_actuelle")
+
     y_info = y - 50
     c.setFont("Helvetica-Bold", 11)
     c.setFillColorRGB(0.22, 0.22, 0.22)
-    c.drawString(x_texte, y_info, "Période :")
+    c.drawString(x_texte, y_info, label_periode)
     c.setFont("Helvetica", 11)
     c.drawString(x_texte + 58, y_info, periode_label)
 
     y_info -= 22
     c.setFont("Helvetica-Bold", 11)
-    c.drawString(x_texte, y_info, "Scénario :")
+    c.drawString(x_texte, y_info, label_scenario)
     c.setFont("Helvetica", 11)
-    c.drawString(x_texte + 63, y_info, ssp_choisi if ssp_choisi else "Période actuelle")
+    c.drawString(x_texte + 63, y_info, valeur_scenario)
 
     y_separateur = y - photo_hauteur_max - 28
     c.setStrokeColorRGB(0.85, 0.85, 0.85)
