@@ -41,7 +41,7 @@ _CTX_SOURCES = {
 # Utilitaires communs
 # ---------------------------------------------------------------------------
 
-# @st.cache_data
+@st.cache_data
 def lister_especes(dossier_racine: str) -> list[str]:
     racine = Path(dossier_racine)
     if not racine.exists():
