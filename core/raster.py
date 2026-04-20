@@ -1,8 +1,7 @@
-# dash_anticipyr/core/raster.py
-
 from __future__ import annotations
 
 import io
+import base64
 from pathlib import Path
 from typing import Tuple
 
@@ -14,10 +13,33 @@ import matplotlib.colors as mcolors
 import numpy as np
 import rasterio
 import streamlit as st
+from PIL import Image
 
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
+import contextily as ctx
+import folium
 
+from dash_anticipyr.core.translations import t
+
+
+# ---------------------------------------------------------------------------
+# Constantes pyrénéennes
+# ---------------------------------------------------------------------------
+PYRENEES_CENTER = [42.6, 0.7]
+PYRENEES_BOUNDS = [[41.5, -2.5], [43.8, 4.0]]
+MIN_ZOOM = 7
+MAX_ZOOM = 16
+
+_CTX_SOURCES = {
+    "plan": ctx.providers.OpenStreetMap.Mapnik,
+    "satellite": ctx.providers.Esri.WorldImagery,
+}
+
+
+# ---------------------------------------------------------------------------
+# Utilitaires communs
+# ---------------------------------------------------------------------------
 
 @st.cache_data
 def lister_especes(dossier_racine: str) -> list[str]:
@@ -37,7 +59,7 @@ def construire_chemin(
         if periode_cle == "current":
             return dossier_bin / "pred_cond_median_binarised.tif"
         if not ssp:
-            raise ValueError("`ssp` doit être renseigné pour une période future.")
+            raise ValueError(t("ssp_manquant"))
         ssp_num = ssp.replace("SSP ", "")
         fichier = f"model_{ssp_num}_{periode_cle}_median_binarised.tif"
         return dossier_bin / fichier
@@ -45,7 +67,7 @@ def construire_chemin(
         if periode_cle == "current":
             return base / "Median_current_projection.tif"
         if not ssp:
-            raise ValueError("`ssp` doit être renseigné pour une période future.")
+            raise ValueError(t("ssp_manquant"))
         ssp_num = ssp.replace("SSP ", "")
         dossier = f"pred_maps_futur_{periode_cle}"
         fichier = f"{ssp_num}_{periode_cle}_median.tif"
@@ -55,7 +77,7 @@ def construire_chemin(
 @st.cache_data
 def charger_raster(chemin_tif: str) -> Tuple[np.ndarray, rasterio.coords.BoundingBox]:
     with rasterio.open(chemin_tif) as src:
-        data   = src.read(1).astype(float)
+        data = src.read(1).astype(float)
         bounds = src.bounds
         nodata = src.nodata
         if nodata is not None:
@@ -63,67 +85,52 @@ def charger_raster(chemin_tif: str) -> Tuple[np.ndarray, rasterio.coords.Boundin
     return data, bounds
 
 
+# ---------------------------------------------------------------------------
+# V1 - Figure statique Cartopy
+# ---------------------------------------------------------------------------
+
 def _ajouter_titre(fig, ax, espece: str, reste: str) -> None:
-    """
-    Affiche le titre de la carte avec deux styles différents :
-    - Nom d'espece  : gras + italique  (convention botanique)
-    - Reste du titre: gras uniquement
-
-    Pourquoi deux ax.text et pas ax.set_title ?
-    ax.set_title n'accepte qu'un seul style pour tout le texte.
-    En plaçant deux Text côte à côte (ha="right" puis ha="left")
-    au même point (0.5, 1.02), on simule un titre mixte.
-
-    fontstyle='italic' + fontweight='bold' = gras italique garanti,
-    contrairement à mathtext dont le gras ne fonctionne pas sur
-    les lettres latines ordinaires.
-    """
-    y_titre = 1.02   # légèrement au-dessus des axes
-
+    y_titre = 1.02
     ax.text(
         0.5, y_titre, espece,
         transform=ax.transAxes,
-        fontsize=13,
-        fontweight="bold",
-        fontstyle="italic",
-        ha="right",
-        va="bottom",
+        fontsize=13, fontweight="bold", fontstyle="italic",
+        ha="right", va="bottom",
     )
     ax.text(
         0.5, y_titre, reste,
         transform=ax.transAxes,
-        fontsize=13,
-        fontweight="bold",
-        fontstyle="normal",
-        ha="left",
-        va="bottom",
+        fontsize=13, fontweight="bold", fontstyle="normal",
+        ha="left", va="bottom",
     )
 
 
-def creer_figure(data: np.ndarray, bounds, titre: str, mode: str = "continu") -> plt.Figure:
-    """
-    Crée une figure cartographique avec Cartopy (projection PlateCarree).
-
-    Pourquoi Cartopy ?
-    - matplotlib seul affiche les pixels sans corriger le rapport lat/lon
-    - A 43°N, 1° de longitude = ~81 km mais 1° de latitude = 111 km
-    - Sans correction, la carte est aplatie horizontalement (~37% d'erreur)
-    - Cartopy applique set_aspect('equal') dans l'espace géographique réel
-    """
-
+def creer_figure(
+    data: np.ndarray,
+    bounds,
+    titre: str,
+    mode: str = "continu",
+    fond: str = "plan",
+) -> plt.Figure:
+    """Figure statique Cartopy - conservée pour les exports PNG/JPG/PDF."""
     proj = ccrs.PlateCarree()
-
-    fig, ax = plt.subplots(
-        figsize=(16, 9),
-        subplot_kw={"projection": proj},
-    )
-
+    fig, ax = plt.subplots(figsize=(16, 9), subplot_kw={"projection": proj})
     masked = np.ma.masked_invalid(data)
 
-    ax.set_extent(
-        [bounds.left, bounds.right, bounds.bottom, bounds.top],
-        crs=proj,
-    )
+    ax.set_extent([bounds.left, bounds.right, bounds.bottom, bounds.top], crs=proj)
+
+    try:
+        source = _CTX_SOURCES.get(fond, ctx.providers.OpenStreetMap.Mapnik)
+        ctx.add_basemap(
+            ax,
+            crs=proj,
+            source=source,
+            zoom="auto",
+            attribution=False,
+        )
+    except Exception:
+        ax.add_feature(cfeature.BORDERS, linewidth=0.6, edgecolor="#555555")
+        ax.add_feature(cfeature.COASTLINE, linewidth=0.6, edgecolor="#555555")
 
     ax.add_feature(cfeature.BORDERS, linewidth=0.6, edgecolor="#555555")
     ax.add_feature(cfeature.COASTLINE, linewidth=0.6, edgecolor="#555555")
@@ -138,15 +145,16 @@ def creer_figure(data: np.ndarray, bounds, titre: str, mode: str = "continu") ->
             vmin=0.0,
             vmax=1.0,
             interpolation="nearest",
+            alpha=0.7,
+            zorder=5,
         )
         cbar = fig.colorbar(img, ax=ax, fraction=0.012, pad=0.03, shrink=0.8)
-        cbar.set_label("Probabilité de présence", fontsize=11, labelpad=10)
+        cbar.set_label(t("cbar_continu_label"), fontsize=11, labelpad=10)
         cbar.set_ticks([0.0, 0.25, 0.5, 0.75, 1.0])
         cbar.set_ticklabels(
-            ["0.0\n(Pas favorable)", "0.25", "0.50", "0.75", "1.0\n(Très favorable)"],
+            [t("cbar_continu_min"), "0.25", "0.50", "0.75", t("cbar_continu_max")],
             fontsize=9,
         )
-
     elif mode == "binaire":
         cmap_bin = mcolors.ListedColormap(["#4393c3", "#2e7d32"])
         img = ax.imshow(
@@ -158,45 +166,35 @@ def creer_figure(data: np.ndarray, bounds, titre: str, mode: str = "continu") ->
             vmin=-0.5,
             vmax=1.5,
             interpolation="nearest",
+            alpha=0.7,
+            zorder=5,
         )
         cbar = fig.colorbar(img, ax=ax, fraction=0.012, pad=0.03, shrink=0.8, ticks=[0, 1])
-        cbar.set_label("Favorable / Pas favorable", fontsize=11, labelpad=10)
-        cbar.set_ticklabels(["Pas favorable (0)", "Favorable (1)"], fontsize=10)
+        cbar.set_label(t("cbar_binaire_label"), fontsize=11, labelpad=10)
+        cbar.set_ticklabels([t("cbar_binaire_0"), t("cbar_binaire_1")], fontsize=10)
 
     gl = ax.gridlines(
-        draw_labels=True,
-        linewidth=0.3,
-        color="gray",
-        alpha=0.5,
-        linestyle="--",
+        draw_labels=True, linewidth=0.3, color="gray", alpha=0.5, linestyle="--"
     )
-    gl.top_labels   = False
+    gl.top_labels = False
     gl.right_labels = False
     gl.xlabel_style = {"size": 9}
     gl.ylabel_style = {"size": 9}
 
-    # ------------------------------------------------------------------
-    # Titre : on coupe sur le premier "·" pour isoler le nom latin
-    # Exemple : "Achillea chamaemelifolia · 2041-2060 | SSP 126"
-    #   espece_part = "Achillea chamaemelifolia"   -> gras italique
-    #   reste_part  = "  ·  2041-2060 | SSP 126"  -> gras normal
-    # ------------------------------------------------------------------
-    parties = titre.split("\u00b7", 1)   # séparateur ·
+    parties = titre.split("\u00b7", 1)
     if len(parties) == 2:
         espece_part = parties[0].strip()
-        reste_part  = "  \u00b7" + parties[1]
+        reste_part = "  \u00b7" + parties[1]
     else:
-        # Pas de · : on essaie avec le tiret central ·
         parties = titre.split("·", 1)
         if len(parties) == 2:
             espece_part = parties[0].strip()
-            reste_part  = "  ·" + parties[1]
+            reste_part = "  ·" + parties[1]
         else:
             espece_part = titre
-            reste_part  = ""
+            reste_part = ""
 
     _ajouter_titre(fig, ax, espece_part, reste_part)
-
     fig.tight_layout()
     return fig
 
@@ -207,3 +205,117 @@ def figure_en_bytes(fig: plt.Figure, fmt: str, dpi: int = 150) -> bytes:
     plt.close(fig)
     buf.seek(0)
     return buf.read()
+
+
+# ---------------------------------------------------------------------------
+# V2 - Carte interactive Folium
+# ---------------------------------------------------------------------------
+
+def _raster_vers_image_rgba(data: np.ndarray, mode: str = "continu") -> Image.Image:
+    """
+    Convertit le raster numpy en image RGBA pour l'overlay Folium.
+    NaN -> alpha=0, valeur valide -> alpha=180.
+    Downsample automatique si > 1024 px.
+    """
+    MAX_PIXELS = 1024
+    h, w = data.shape
+    if max(h, w) > MAX_PIXELS:
+        step = max(h, w) // MAX_PIXELS + 1
+        data = data[::step, ::step]
+        h, w = data.shape
+
+    rgba = np.zeros((h, w, 4), dtype=np.uint8)
+    masque_valide = ~np.isnan(data)
+
+    if mode == "continu":
+        cmap = plt.get_cmap("viridis")
+        norm = mcolors.Normalize(vmin=0.0, vmax=1.0)
+        couleurs = cmap(norm(np.where(masque_valide, data, 0.0)))
+    else:
+        cmap = mcolors.ListedColormap(["#4393c3", "#2e7d32"])
+        norm = mcolors.BoundaryNorm([-0.5, 0.5, 1.5], cmap.N)
+        couleurs = cmap(norm(np.where(masque_valide, data, 0.0)))
+
+    rgba[..., :3] = (couleurs[..., :3] * 255).astype(np.uint8)
+    rgba[masque_valide, 3] = 180
+    rgba[~masque_valide, 3] = 0
+
+    return Image.fromarray(rgba, mode="RGBA")
+
+
+def creer_carte_folium(
+    data: np.ndarray,
+    bounds,
+    mode: str = "continu",
+    fond: str = "plan",
+    opacite: float = 0.7,
+) -> folium.Map:
+
+    img_pil = _raster_vers_image_rgba(data, mode)
+    buf = io.BytesIO()
+    img_pil.save(buf, format="PNG")
+    img_b64 = base64.b64encode(buf.getvalue()).decode("utf-8")
+    img_url = f"data:image/png;base64,{img_b64}"
+
+    image_bounds = [
+        [bounds.bottom, bounds.left],
+        [bounds.top, bounds.right],
+    ]
+
+    carte = folium.Map(
+        location=PYRENEES_CENTER,
+        zoom_start=9,
+        min_zoom=MIN_ZOOM,
+        max_zoom=MAX_ZOOM,
+        max_bounds=True,
+        max_bounds_viscosity=1.0,
+        tiles=None,
+        control_scale=True,
+    )
+
+    if fond == "plan":
+        folium.TileLayer(
+            tiles="OpenStreetMap",
+            attr="OpenStreetMap contributors",
+            min_zoom=MIN_ZOOM,
+            max_zoom=MAX_ZOOM,
+            overlay=False,
+            control=False,
+        ).add_to(carte)
+    else:
+        folium.TileLayer(
+            tiles=(
+                "https://server.arcgisonline.com/ArcGIS/rest/services/"
+                "World_Imagery/MapServer/tile/{z}/{y}/{x}"
+            ),
+            attr="Esri World Imagery",
+            min_zoom=MIN_ZOOM,
+            max_zoom=MAX_ZOOM,
+            overlay=False,
+            control=False,
+        ).add_to(carte)
+
+        folium.TileLayer(
+            tiles=(
+                "https://server.arcgisonline.com/ArcGIS/rest/services/"
+                "Reference/World_Reference_Overlay/MapServer/tile/{z}/{y}/{x}"
+            ),
+            attr="Esri World Reference Overlay",
+            min_zoom=MIN_ZOOM,
+            max_zoom=MAX_ZOOM,
+            overlay=True,
+            control=False,
+        ).add_to(carte)
+
+    folium.raster_layers.ImageOverlay(
+        image=img_url,
+        bounds=image_bounds,
+        opacity=opacite,
+        interactive=False,
+        cross_origin=False,
+        zindex=2,
+    ).add_to(carte)
+
+    carte.fit_bounds(image_bounds)
+
+    return carte

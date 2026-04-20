@@ -37,7 +37,7 @@ def generer_pdf_session(
         return
 
     if periode_cle == "current":
-        titre_carte = f"{espece}  ·  Période actuelle (1970-2000)"
+        titre_carte = f"{espece}  · (1970-2000)"
     else:
         titre_carte = f"{espece}  ·  {periode_label} | {ssp_choisi}"
     if est_binaire:

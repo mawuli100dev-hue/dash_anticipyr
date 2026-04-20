@@ -1,5 +1,3 @@
-# dash_anticipyr/ui/sidebar_style.py
-
 from __future__ import annotations
 
 import streamlit as st
@@ -22,20 +20,123 @@ _SSP_TEXTE = {
 }
 
 
+# DROPDOWN_CSS conservé pour usage éventuel ailleurs, mais n'est plus
+# utilisé par le sélecteur de langue (remplacé par st.selectbox natif).
+DROPDOWN_CSS = """
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+        background: transparent;
+        overflow: hidden;
+    }
+
+    .dropdown {
+        position: relative;
+        width: 100%;
+        user-select: none;
+    }
+
+    .sel {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 28px 6px 9px;
+        background: #f8faf9;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.82rem;
+        color: #374151;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .sel:hover {
+        border-color: #1b5e35;
+    }
+
+    .sel.open {
+        border-color: #1b5e35;
+        box-shadow: 0 0 0 2px rgba(27,94,53,0.18);
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+    .arrow {
+        position: absolute;
+        right: 9px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6b7280;
+        font-size: 10px;
+        pointer-events: none;
+        transition: transform 0.15s ease;
+    }
+
+    .sel.open ~ .arrow {
+        transform: translateY(-50%) rotate(180deg);
+    }
+
+    .menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: #ffffff;
+        border: 1px solid #1b5e35;
+        border-top: none;
+        border-bottom-left-radius: 6px;
+        border-bottom-right-radius: 6px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.10);
+        z-index: 999;
+        overflow: hidden;
+    }
+
+    .menu.visible {
+        display: block;
+    }
+
+    .option {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 10px;
+        font-size: 0.82rem;
+        color: #374151;
+        cursor: pointer;
+        transition: background 0.1s ease;
+    }
+
+    .option:hover {
+        background: #f0faf3;
+        color: #1b5e35;
+    }
+
+    .option-active {
+        background: #e8f5e9;
+        color: #1b5e35;
+        font-weight: 600;
+    }
+
+    #sel-label {
+        flex: 1;
+    }
+"""
+
+
 def inject_sidebar_styles(ssp_actif: str | None = None) -> None:
 
     regles_ssp = ""
     for ssp, couleur in SSP_COULEURS.items():
         ancre_id = "ancre-" + ssp.lower().replace(" ", "-")
-        slug     = ssp.lower().replace(" ", "-")
-        actif    = (ssp == ssp_actif)
-        bg       = couleur if actif else f"{couleur}1a"
-        texte    = _SSP_TEXTE[ssp] if actif else couleur
-        poids    = "700"    if actif else "500"
-        ombre    = f"0 0 0 3px {couleur}44" if actif else "none"
+        slug = ssp.lower().replace(" ", "-")
+        actif = ssp == ssp_actif
+        bg = couleur if actif else f"{couleur}1a"
+        texte = _SSP_TEXTE[ssp] if actif else couleur
+        poids = "700" if actif else "500"
+        ombre = f"0 0 0 3px {couleur}44" if actif else "none"
 
         regles_ssp += f"""
-            /* {ssp} */
             div[data-testid="stColumn"]:has(#{ancre_id}) button {{
                 background-color: {bg} !important;
                 border: 2px solid {couleur} !important;
@@ -93,22 +194,39 @@ def inject_sidebar_styles(ssp_actif: str | None = None) -> None:
     st.markdown(
         f"""
         <style>
-            /* Fond sidebar */
             [data-testid="stSidebar"] {{
                 background-color: #f8faf9;
                 border-right: 1px solid #e5e7eb;
             }}
+
             [data-testid="stSidebar"] hr {{
                 border-color: #e5e7eb !important;
                 margin: 8px 0 !important;
             }}
 
-            /* Radio accent vert */
+            /* Supprime la marge basse sous le selectbox langue (1er selectbox) */
+            [data-testid="stSidebar"] [data-testid="stSelectbox"]:first-of-type {{
+                margin-bottom: 0 !important;
+            }}
+
+            [data-testid="stSidebar"] [data-testid="stSelectbox"]:first-of-type
+            > div:first-child {{
+                margin-bottom: 0 !important;
+                padding-bottom: 0 !important;
+            }}
+
+            /* Supprime le padding-bottom du bloc stElementContainer autour du selectbox langue */
+            [data-testid="stSidebar"] [data-testid="stElementContainer"]:has(
+                [data-testid="stSelectbox"]:first-of-type
+            ) {{
+                margin-bottom: 0 !important;
+                padding-bottom: 0 !important;
+            }}
+
             [data-testid="stSidebar"] [role="radiogroup"] label div:first-child {{
                 border-color: {VERT} !important;
             }}
 
-            /* Icone loupe */
             [data-testid="stSidebar"] .search-icon-col {{
                 display: flex;
                 align-items: center;
@@ -117,10 +235,12 @@ def inject_sidebar_styles(ssp_actif: str | None = None) -> None:
                 padding-bottom: 15px;
                 color: #6b7280;
             }}
+
             [data-testid="stSidebar"] [data-testid="stHorizontalBlock"]:has(.search-icon-col) {{
                 gap: 4px !important;
                 align-items: center !important;
             }}
+
             [data-testid="stSidebar"] [data-testid="stHorizontalBlock"]:has(.search-icon-col)
             > [data-testid="stColumn"]:first-child {{
                 padding-right: 0 !important;
@@ -129,24 +249,12 @@ def inject_sidebar_styles(ssp_actif: str | None = None) -> None:
                 max-width: 28px !important;
             }}
 
-            /*
-             * ITALIQUE dans le selectbox especes
-             * On cible le 1er selectbox de la sidebar (especes)
-             * via :first-of-type pour ne pas toucher le selectbox "Periode"
-             *
-             * Les selectbox Streamlit ont data-baseweb="select"
-             * Chaque div enfant directe est soit :
-             *   - la valeur affichee (champ ferme)
-             *   - les options (liste ouverte, dans un portail hors sidebar)
-             */
-
-            /* Valeur affichee dans le champ ferme - tous niveaux enfants */
-            [data-testid="stSidebar"] [data-testid="stSelectbox"]:first-of-type
+            /* Style italic pour tous les selectbox de la sidebar */
+            [data-testid="stSidebar"] [data-testid="stSelectbox"]
             [data-baseweb="select"] * {{
                 font-style: italic !important;
             }}
 
-            /* Options dans la liste deroulante ouverte (portail global) */
             [data-baseweb="popover"] [role="option"] *,
             [data-baseweb="popover"] [role="option"],
             ul[role="listbox"] li,
@@ -154,20 +262,16 @@ def inject_sidebar_styles(ssp_actif: str | None = None) -> None:
                 font-style: italic !important;
             }}
 
-            /* Champ de saisie lors de la recherche */
-            [data-testid="stSidebar"] [data-testid="stSelectbox"]:first-of-type input {{
+            [data-testid="stSidebar"] [data-testid="stSelectbox"] input {{
                 font-style: italic !important;
             }}
 
-            /* Couleurs SSP */
             {regles_ssp}
         </style>
         """,
         unsafe_allow_html=True,
     )
 
-    # JS uniquement pour les couleurs SSP (fiable)
-    # L'italique est géré en CSS pur ci-dessus
     st.markdown(
         f"""
         <script>
