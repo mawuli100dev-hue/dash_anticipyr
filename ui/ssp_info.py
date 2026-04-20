@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import streamlit as st
 
 ARTICLE_URL = "https://nsojournals.onlinelibrary.wiley.com/doi/10.1002/ecog.08067?af=R"
@@ -13,7 +15,9 @@ AUTHORS = [
     "Joris A. M. Bertrand",
 ]
 
-# Valeurs issues de la Figure 2 du rapport (Collette, 2024) - horizon 2090 vs période actuelle
+# Chemin vers le graphique SSP (issu de la Figure 2 du rapport)
+FIGURE_SSP = Path(__file__).parent.parent / "data" / "figures" / "ssp_projections.png"
+
 SSP_DATA = [
     {
         "ssp": "SSP 126",
@@ -59,7 +63,7 @@ def render_ssp_info() -> None:
         "des espèces pyrénéennes jusqu'en 2090."
     )
 
-    # ── Cartes SSP ────────────────────────────────────────────────────────
+    #  Cartes SSP
     cols = st.columns(4)
     for col, ssp in zip(cols, SSP_DATA):
         with col:
@@ -93,7 +97,22 @@ def render_ssp_info() -> None:
 
     st.divider()
 
-    # ── Tableau récapitulatif ─────────────────────────────────────────────
+    #  Graphique projections climatiques ─
+    if FIGURE_SSP.exists():
+        st.image(
+            str(FIGURE_SSP),
+            caption="Projection moyenne des températures et des précipitations dans les Pyrénées à l’horizon 2081–2100 selon différents scénarios climatiques (Shared Socioeconomic Pathways, SSP), à partir des données WorldClim 2.1 et de l’ensemble des modèles de circulation générale (2030, 2050, 2070 & 2090 correspondants aux périodes 2021–2040, 2041–2060, 2061–2080 et 2081–2100)",
+            use_container_width=True,
+        )
+    else:
+        st.info(
+            f"Graphique non trouvé : `{FIGURE_SSP}`  \n"
+            "Placez le fichier image dans `dash_anticipyr/data/figures/`."
+        )
+
+    st.divider()
+
+    #  Tableau récapitulatif ─
     st.markdown("### Recapitulatif a l'horizon 2090")
     st.markdown(
         "| SSP | Emissions | Delta T (°C) | Delta P (mm) |\n"
@@ -106,7 +125,7 @@ def render_ssp_info() -> None:
 
     st.divider()
 
-    # ── Références ────────────────────────────────────────────────────────
+    #  Références
     st.markdown("### References")
     st.markdown(
         f"**Article :** [{ARTICLE_URL}]({ARTICLE_URL})  \n"
