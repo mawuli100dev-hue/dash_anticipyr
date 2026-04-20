@@ -65,7 +65,7 @@ def render_sidebar() -> tuple[str, str, str, str | None, str]:
             st.error("Aucune espèce trouvée. Vérifiez dash_anticipyr/data/cartographies/.")
             st.stop()
 
-        st.caption(f"{len(especes)} espèce(s) disponible(s)")
+        st.caption(f"{len(especes) + 1} espèce(s) disponible(s)")
 
         especes_options = [""] + especes
 
