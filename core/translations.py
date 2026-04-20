@@ -95,6 +95,22 @@ TEXTES: dict[str, dict[str, str]] = {
         "ssp_585_description":      "Scénario extrême : dépendance massive aux énergies fossiles, aucune mitigation.",
         "ssp_temperature":          "Température (2090) :",
         "ssp_precipitations":       "Précipitations (2090) :",
+
+
+        "howto_step1_titre": "Choisir une espèce",
+        "howto_step1_desc":  "Sélectionnez une espèce dans cette liste déroulante pour charger ses cartes de distribution.",
+        "howto_step2_titre": "Choisir une période",
+        "howto_step2_desc":  "Sélectionnez la période temporelle : actuelle ou une projection future.",
+        "howto_step3_titre": "Choisir un scénario",
+        "howto_step3_desc":  "Pour une période future, choisissez un scénario climatique SSP.",
+        "howto_step4_titre": "Explorer la carte",
+        "howto_step4_desc":  "Naviguez entre la carte interactive et les informations sur les scénarios.",
+        "howto_step5_titre": "Télécharger",
+        "howto_step5_desc":  "Exportez la carte en PNG, JPG, PDF ou TIF avec le fond de carte choisi.",
+        "howto_next":        "Suivant →",
+        "howto_prev":        "← Précédent",
+        "howto_fermer":      "Terminer",
+        "howto_btn":         "Comment utiliser ?",
     },
 
     "en": {
@@ -182,6 +198,21 @@ TEXTES: dict[str, dict[str, str]] = {
         "ssp_585_description":      "Extreme scenario: massive fossil fuel dependency, no mitigation.",
         "ssp_temperature":          "Temperature (2090):",
         "ssp_precipitations":       "Precipitation (2090):",
+
+        "howto_step1_titre": "Choose a species",
+        "howto_step1_desc":  "Select a species from this dropdown to load its distribution maps.",
+        "howto_step2_titre": "Choose a period",
+        "howto_step2_desc":  "Select the time period: current or a future projection.",
+        "howto_step3_titre": "Choose a scenario",
+        "howto_step3_desc":  "For a future period, choose a SSP climate scenario.",
+        "howto_step4_titre": "Explore the map",
+        "howto_step4_desc":  "Navigate between the interactive map and scenario information.",
+        "howto_step5_titre": "Download",
+        "howto_step5_desc":  "Export the map as PNG, JPG, PDF or TIF with the chosen basemap.",
+        "howto_next":        "Next →",
+        "howto_prev":        "← Back",
+        "howto_fermer":      "Finish",
+        "howto_btn":         "How to use?"
     },
 
     "es": {
@@ -269,6 +300,21 @@ TEXTES: dict[str, dict[str, str]] = {
         "ssp_585_description":      "Escenario extremo: dependencia masiva de combustibles fósiles, sin mitigación.",
         "ssp_temperature":          "Temperatura (2090):",
         "ssp_precipitations":       "Precipitaciones (2090):",
+
+        "howto_step1_titre": "Elegir una especie",
+        "howto_step1_desc":  "Seleccione una especie en esta lista para cargar sus mapas de distribución.",
+        "howto_step2_titre": "Elegir un período",
+        "howto_step2_desc":  "Seleccione el período temporal: actual o una proyección futura.",
+        "howto_step3_titre": "Elegir un escenario",
+        "howto_step3_desc":  "Para un período futuro, elija un escenario climático SSP.",
+        "howto_step4_titre": "Explorar el mapa",
+        "howto_step4_desc":  "Navegue entre el mapa interactivo y la información sobre los escenarios.",
+        "howto_step5_titre": "Descargar",
+        "howto_step5_desc":  "Exporte el mapa en PNG, JPG, PDF o TIF con el fondo de mapa elegido.",
+        "howto_next":        "Siguiente →",
+        "howto_prev":        "← Anterior",
+        "howto_fermer":      "Terminar",
+        "howto_btn":         "¿Cómo usar?",
     },
 
     "ca": {
