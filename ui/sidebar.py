@@ -1,56 +1,140 @@
-# dash_anticipyr/ui/sidebar.py
-
 from __future__ import annotations
+
+import base64
+from pathlib import Path
 
 import streamlit as st
 
 from dash_anticipyr.core.constants import PERIODES, SSP_LIST
 from dash_anticipyr.core.paths import data_cartographies_root
 from dash_anticipyr.core.raster import lister_especes
+from dash_anticipyr.core.translations import init_langue, t
 from dash_anticipyr.ui.sidebar_style import inject_sidebar_styles
 
-SSP_COULEURS = {
-    "SSP 126": "#2e7d32",
-    "SSP 245": "#f9a825",
-    "SSP 370": "#e65100",
-    "SSP 585": "#b71c1c",
+
+_FLAGS_DIR = Path(__file__).resolve().parent.parent / "data" / "flags"
+
+_LANGUE_LABELS = {
+    "fr": "Français",
+    "en": "English",
+    "es": "Español",
+    "ca": "Català",
 }
 
 
-def render_sidebar() -> tuple[str, str, str, str | None, str]:
-    """
-    Retour :
-      - espece (str)
-      - periode_label (str)
-      - periode_cle (str)
-      - ssp_choisi (str | None)
-      - mode_visu (str)
-    """
-    inject_sidebar_styles()
+def _lire_drapeau_b64(code: str) -> str:
+    chemin = _FLAGS_DIR / f"{code}.png"
+    if not chemin.exists():
+        return ""
+    with open(chemin, "rb") as f:
+        return base64.b64encode(f.read()).decode("utf-8")
 
-    with st.sidebar:
 
-        # ── Titre ─────────────────────────────────────────────────────────
+def _render_selecteur_langue() -> None:
+    """
+    Sélecteur de langue via st.selectbox natif Streamlit.
+    Le drapeau de la langue active est affiché dans un badge arrondi
+    juste au-dessus du selectbox via st.markdown.
+    """
+    langue_active = st.session_state.get("langue", "fr")
+    codes = list(_LANGUE_LABELS.keys())
+
+    index = codes.index(langue_active) if langue_active in codes else 0
+
+    # Badge drapeau au-dessus du selectbox
+    b64 = _lire_drapeau_b64(langue_active)
+    if b64:
         st.markdown(
-            """
-            <div style="padding:16px 8px 8px 8px; margin-bottom:4px;">
-                <p style="font-size:1.2rem; font-weight:700; color:#1b5e35; margin:0; letter-spacing:0.02em;">
-                    Flore Pyrénéenne
-                </p>
-                <p style="font-size:0.78rem; color:#9ca3af; margin:2px 0 0 0;">
-                    Sélectionnez une espèce, une période et un scénario
-                </p>
+            f"""
+            <div style="display:flex;align-items:center;gap:7px;
+                        margin-bottom:4px;">
+                <div style="
+                    display:inline-flex;
+                    align-items:center;
+                    justify-content:center;
+                    background:#f0faf3;
+                    border:1px solid #d1fae5;
+                    border-radius:6px;
+                    padding:3px 7px 3px 5px;
+                    gap:6px;
+                ">
+                    <img src="data:image/png;base64,{b64}"
+                         width="24" height="16"
+                         style="border-radius:3px;object-fit:cover;
+                                display:block;flex-shrink:0;"
+                         alt="{langue_active}" />
+                </div>
             </div>
             """,
             unsafe_allow_html=True,
         )
 
+    code_choisi = st.selectbox(
+        "Langue",
+        options=codes,
+        index=index,
+        format_func=lambda c: _LANGUE_LABELS[c],
+        key="_selecteur_langue_widget",
+        label_visibility="collapsed",
+    )
+
+    if code_choisi != langue_active:
+        st.session_state["langue"] = code_choisi
+        st.session_state["mode_visu"] = t("mode_continu")
+        st.query_params["langue"] = code_choisi
+        st.rerun()
+
+    # Lecture de l'URL au cas où la langue a été changée en dehors du widget
+    code_depuis_url = st.query_params.get("langue", code_choisi)
+    if code_depuis_url in codes and code_depuis_url != st.session_state.get("langue", "fr"):
+        st.session_state["langue"] = code_depuis_url
+        st.session_state["mode_visu"] = t("mode_continu")
+        st.rerun()
+
+
+def render_sidebar() -> tuple[str, str, str, str | None, str]:
+
+    init_langue()
+
+    if "ssp_choisi" not in st.session_state:
+        st.session_state.ssp_choisi = SSP_LIST[0]
+
+    MODES_VISU = [t("mode_continu"), t("mode_binaire")]
+
+    if "mode_visu" not in st.session_state:
+        st.session_state["mode_visu"] = MODES_VISU[0]
+
+    inject_sidebar_styles(ssp_actif=st.session_state.ssp_choisi)
+
+    with st.sidebar:
+
+        _render_selecteur_langue()
+
+        # Séparateur compact sans marge excessive
+        st.markdown(
+            "<hr style='margin: 4px 0 8px 0; border: none; "
+            "border-top: 1px solid #e5e7eb;' />",
+            unsafe_allow_html=True,
+        )
+
+        st.markdown(
+            f"""
+            <div style="padding:8px 8px 8px 8px; margin-bottom:4px;">
+                <p style="font-size:1.2rem;font-weight:700;color:#1b5e35;margin:0;">
+                    {t("sidebar_titre")}
+                </p>
+                <p style="font-size:0.78rem;color:#9ca3af;margin:2px 0 0 0;">
+                    {t("sidebar_sous_titre")}
+                </p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
         st.divider()
 
-        # ── Espèce ────────────────────────────────────────────────────────
         st.markdown(
-            "<p style='font-size:0.82rem; font-weight:600; color:#374151; margin-bottom:4px;'>"
-            "Espèce étudiée</p>",
+            f"<p style='font-size:0.82rem;font-weight:600;color:#374151;margin-bottom:4px;'>"
+            f"{t('sidebar_espece_label')}</p>",
             unsafe_allow_html=True,
         )
 
@@ -58,13 +142,10 @@ def render_sidebar() -> tuple[str, str, str, str | None, str]:
         especes = lister_especes(dossier_racine_defaut)
 
         if not especes:
-            st.error(
-                "Aucune espèce trouvée.\n"
-                "Vérifiez que les dossiers existent dans `dash_anticipyr/data/cartographies/`."
-            )
+            st.error(t("sidebar_espece_error"))
             st.stop()
 
-        st.caption(f"{len(especes)} espèce(s) disponible(s)")
+        st.caption(t("sidebar_espece_caption", n=len(especes) + 1))
 
         especes_options = [""] + especes
 
@@ -77,130 +158,160 @@ def render_sidebar() -> tuple[str, str, str, str | None, str]:
             else 1
         )
 
-        espece = st.selectbox(
-            "Nom de l'espèce",
-            options=especes_options,
-            index=index,
-            key="espece_selectionnee",
-            help="Tapez après ouverture pour filtrer la liste.",
-            label_visibility="collapsed",
-        )
+        col_icon, col_select = st.columns([1, 9])
+
+        with col_icon:
+            st.markdown(
+                """
+                <div class="search-icon-col">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         width="16" height="16" viewBox="0 0 24 24"
+                         fill="none" stroke="currentColor" stroke-width="2"
+                         stroke-linecap="round" stroke-linejoin="round"
+                         aria-hidden="true">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.3-4.3"></path>
+                    </svg>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+        with col_select:
+            espece = st.selectbox(
+                t("sidebar_espece_label"),
+                options=especes_options,
+                index=index,
+                key="espece_selectionnee",
+                help=t("sidebar_espece_help"),
+                label_visibility="collapsed",
+            )
 
         if not espece:
-            st.warning("Sélectionnez une espèce dans la liste.")
+            st.warning(t("sidebar_espece_warning"))
             st.stop()
 
         st.markdown(
-            f"<p style='font-size:0.78rem; color:#6b7280; font-style:italic; margin-top:2px;'>"
+            f"<p style='font-size:0.78rem;color:#6b7280;font-style:italic;margin-top:2px;'>"
             f"{espece}</p>",
             unsafe_allow_html=True,
         )
-
         st.divider()
 
-        # ── Période ───────────────────────────────────────────────────────
         st.markdown(
-            "<p style='font-size:0.82rem; font-weight:600; color:#374151; margin-bottom:4px;'>"
-            "Période de projection</p>",
+            f"<p style='font-size:0.82rem;font-weight:600;color:#374151;margin-bottom:4px;'>"
+            f"{t('sidebar_periode_label')}</p>",
             unsafe_allow_html=True,
         )
-
         periode_label = st.selectbox(
-            "Période",
+            t("sidebar_periode_label"),
             options=list(PERIODES.keys()),
             label_visibility="collapsed",
         )
         periode_cle = PERIODES[periode_label]
-
         st.divider()
 
-        # ── SSP ───────────────────────────────────────────────────────────
         if periode_cle == "current":
             st.markdown(
-                """
-                <div style="
-                    background-color:#f0faf3;
-                    border-left:4px solid #1b5e35;
-                    border-radius:4px;
-                    padding:10px 12px;
-                    font-size:0.82rem;
-                    color:#374151;
-                ">
-                    <strong>Période actuelle (1970–2000)</strong><br>
-                    Aucun scénario SSP - ces données correspondent
-                    aux observations climatiques de référence.
+                f"""
+                <div style="background-color:#f0faf3;border-left:4px solid #1b5e35;
+                    border-radius:4px;padding:10px 12px;font-size:0.82rem;color:#374151;">
+                    {t("sidebar_current_info")}
                 </div>
                 """,
                 unsafe_allow_html=True,
             )
             ssp_choisi = None
-
         else:
             st.markdown(
-                "<p style='font-size:0.82rem; font-weight:600; color:#374151; margin-bottom:4px;'>"
-                "Scénario climatique (SSP)</p>",
+                f"<p style='font-size:0.82rem;font-weight:600;color:#374151;margin-bottom:6px;'>"
+                f"{t('sidebar_ssp_label')}</p>",
                 unsafe_allow_html=True,
             )
 
-            ssp_choisi = st.selectbox(
-                "SSP",
-                options=SSP_LIST,
-                help="SSP 126 = optimiste  ·  SSP 585 = pessimiste",
-                label_visibility="collapsed",
-            )
+            ssp_descriptions = {
+                "SSP 126": t("ssp_126_desc"),
+                "SSP 245": t("ssp_245_desc"),
+                "SSP 370": t("ssp_370_desc"),
+                "SSP 585": t("ssp_585_desc"),
+            }
 
-            couleur = SSP_COULEURS.get(ssp_choisi, "#6b7280")
-            st.markdown(
-                f"""
-                <div style="
-                    display:inline-block;
-                    background-color:{couleur}18;
-                    border:1px solid {couleur};
-                    border-radius:12px;
-                    padding:3px 12px;
-                    font-size:0.78rem;
-                    font-weight:600;
-                    color:{couleur};
-                    margin-top:4px;
-                ">
-                    {ssp_choisi}
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
+            for ligne in [(SSP_LIST[0], SSP_LIST[1]), (SSP_LIST[2], SSP_LIST[3])]:
+                col_g, col_d = st.columns(2, gap="small")
+                for ssp, col in zip(ligne, [col_g, col_d]):
+                    ancre_id = "ancre-" + ssp.lower().replace(" ", "-")
+                    desc = ssp_descriptions[ssp]
+                    with col:
+                        st.markdown(
+                            f'<span id="{ancre_id}" style="display:none;"></span>',
+                            unsafe_allow_html=True,
+                        )
+                        if st.button(
+                            f"{ssp}\n{desc}",
+                            key=f"ssp_{ssp.replace(' ', '_')}",
+                            use_container_width=True,
+                        ):
+                            st.session_state.ssp_choisi = ssp
+                            st.session_state["mode_visu"] = st.session_state.get(
+                                "mode_visu", MODES_VISU[0]
+                            )
+                            st.rerun()
+
+            ssp_choisi = st.session_state.ssp_choisi
 
         st.divider()
 
-        # ── Mode de visualisation ─────────────────────────────────────────
         st.markdown(
-            "<p style='font-size:0.82rem; font-weight:600; color:#374151; margin-bottom:4px;'>"
-            "Mode de visualisation</p>",
+            f"<p style='font-size:0.82rem;font-weight:600;color:#374151;margin-bottom:4px;'>"
+            f"{t('sidebar_mode_label')}</p>",
             unsafe_allow_html=True,
         )
 
-        mode_visu = st.radio(
-            "Mode",
-            options=["Continu", "Absence", "Présence"],
-            index=0,
+        idx_mode = 1 if st.session_state.get("mode_visu") == MODES_VISU[1] else 0
+
+        mode_selectionne = st.radio(
+            t("sidebar_mode_label"),
+            options=MODES_VISU,
+            index=idx_mode,
             label_visibility="collapsed",
-            help=(
-                "Continu : probabilité 0→1  |  "
-                "Absence : zones sous le seuil  |  "
-                "Présence : zones au-dessus du seuil"
-            ),
+            help=t("sidebar_mode_help"),
         )
+        st.session_state["mode_visu"] = mode_selectionne
+        mode_visu = mode_selectionne
 
         st.divider()
 
-        # ── Pied de sidebar ───────────────────────────────────────────────
         st.markdown(
-            """
-            <div style="font-size:0.72rem; color:#9ca3af; text-align:center; padding:8px 0 4px 0;">
-                ANTICI'PYR · Flore Pyrénéenne<br>
-                Université de Perpignan Via Domitia
+            f"""
+            <div style="font-size:0.72rem;color:#9ca3af;text-align:center;padding:8px 0 4px 0;">
+                {t("sidebar_footer")}
             </div>
             """,
             unsafe_allow_html=True,
         )
+
+         # Logos partenaires - 2 lignes de 4
+        _LOGOS_DIR = Path(__file__).resolve().parent.parent / "data" / "logos"
+
+        logos = sorted(_LOGOS_DIR.glob("*.png"), key=lambda p: p.name)
+
+        if logos:
+            st.markdown(
+                "<hr style='margin: 6px 0 8px 0; border: none; "
+                "border-top: 1px solid #e5e7eb;' />",
+                unsafe_allow_html=True,
+            )
+            for i in range(0, len(logos), 4):
+                cols = st.columns(4)
+                for col, logo_path in zip(cols, logos[i:i+4]):
+                    with open(logo_path, "rb") as f:
+                        b64 = base64.b64encode(f.read()).decode("utf-8")
+                    with col:
+                        st.markdown(
+                            f'<img src="data:image/png;base64,{b64}" '
+                            f'style="width:100%;max-height:36px;object-fit:contain;" '
+                            f'alt="{logo_path.stem}" />',
+                            unsafe_allow_html=True,
+                        )
 
     return espece, periode_label, periode_cle, ssp_choisi, mode_visu
