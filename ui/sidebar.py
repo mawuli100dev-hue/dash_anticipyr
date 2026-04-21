@@ -145,7 +145,7 @@ def render_sidebar() -> tuple[str, str, str, str | None, str]:
             st.error(t("sidebar_espece_error"))
             st.stop()
 
-        st.caption(t("sidebar_espece_caption", n=len(especes) + 1))
+        st.caption(t("sidebar_espece_caption", n=len(especes)))
 
         especes_options = [""] + especes
 

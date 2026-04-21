@@ -4,8 +4,9 @@ from pathlib import Path
 
 import streamlit as st
 
-from dash_anticipyr.core.translations import t
+from dash_anticipyr.core.translations import t, get_langue_courante
 
+SSP_FIG_DIR = Path(__file__).parent.parent / "data" / "SSP_fig"
 
 ARTICLE_URL = "https://nsojournals.onlinelibrary.wiley.com/doi/10.1002/ecog.08067?af=R"
 
@@ -81,6 +82,18 @@ def render_ssp_info() -> None:
 
     st.divider()
 
+    # Figure SSP selon la langue active
+    langue = get_langue_courante()
+    figure_langue = SSP_FIG_DIR / f"ssp_{langue}.png"
+    if not figure_langue.exists():
+        figure_langue = SSP_FIG_DIR / "ssp_fr.png"  # fallback français
+
+    if figure_langue.exists():
+        col_vide, col_img, col_vide2 = st.columns([1, 2, 1])
+        with col_img:
+            st.image(str(figure_langue), use_container_width=True)
+
+    # Figure des projections climatiques
     if FIGURE_SSP.exists():
         st.image(
             str(FIGURE_SSP),
