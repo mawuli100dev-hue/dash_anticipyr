@@ -8,7 +8,6 @@ from dash_anticipyr.core.inaturalist import get_photo_espece
 from dash_anticipyr.core.paths import data_cartographies_root
 from dash_anticipyr.core.pdf import construire_nom_fichier
 from dash_anticipyr.core.raster import (
-    binariser_raster,
     charger_raster,
     construire_chemin,
     creer_figure,
