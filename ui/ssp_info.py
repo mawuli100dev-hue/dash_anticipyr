@@ -122,11 +122,4 @@ def render_ssp_info() -> None:
         + lignes
     )
 
-    st.divider()
 
-    st.markdown(t("ssp_ref_titre"))
-    st.markdown(
-        f"{t('ssp_ref_article')} [{ARTICLE_URL}]({ARTICLE_URL})  \n"
-        f"{t('ssp_ref_auteurs')} " + " · ".join(AUTHORS) + "  \n"
-        f"{t('ssp_ref_dashboard')} Ayi AMAVIGAN"
-    )

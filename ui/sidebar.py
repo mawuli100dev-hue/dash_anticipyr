@@ -14,6 +14,15 @@ from dash_anticipyr.ui.sidebar_style import inject_sidebar_styles
 
 _FLAGS_DIR = Path(__file__).resolve().parent.parent / "data" / "flags"
 
+ARTICLE_URL = "https://nsojournals.onlinelibrary.wiley.com/doi/10.1002/ecog.08067?af=R"
+
+AUTHORS = [
+    "Noèmie Collette",
+    "Sébastien Pinel",
+    "Valérie Delorme-Hinoux",
+    "Joris A. M. Bertrand",
+]
+
 _LANGUE_LABELS = {
     "fr": "Français",
     "en": "English",
@@ -31,37 +40,21 @@ def _lire_drapeau_b64(code: str) -> str:
 
 
 def _render_selecteur_langue() -> None:
-    """
-    Sélecteur de langue via st.selectbox natif Streamlit.
-    Le drapeau de la langue active est affiché dans un badge arrondi
-    juste au-dessus du selectbox via st.markdown.
-    """
     langue_active = st.session_state.get("langue", "fr")
     codes = list(_LANGUE_LABELS.keys())
-
     index = codes.index(langue_active) if langue_active in codes else 0
 
-    # Badge drapeau au-dessus du selectbox
     b64 = _lire_drapeau_b64(langue_active)
     if b64:
         st.markdown(
             f"""
-            <div style="display:flex;align-items:center;gap:7px;
-                        margin-bottom:4px;">
-                <div style="
-                    display:inline-flex;
-                    align-items:center;
-                    justify-content:center;
-                    background:#f0faf3;
-                    border:1px solid #d1fae5;
-                    border-radius:6px;
-                    padding:3px 7px 3px 5px;
-                    gap:6px;
-                ">
+            <div style="display:flex;align-items:center;gap:7px;margin-bottom:4px;">
+                <div style="display:inline-flex;align-items:center;justify-content:center;
+                    background:#f0faf3;border:1px solid #d1fae5;border-radius:6px;
+                    padding:3px 7px 3px 5px;gap:6px;">
                     <img src="data:image/png;base64,{b64}"
                          width="24" height="16"
-                         style="border-radius:3px;object-fit:cover;
-                                display:block;flex-shrink:0;"
+                         style="border-radius:3px;object-fit:cover;display:block;flex-shrink:0;"
                          alt="{langue_active}" />
                 </div>
             </div>
@@ -84,7 +77,6 @@ def _render_selecteur_langue() -> None:
         st.query_params["langue"] = code_choisi
         st.rerun()
 
-    # Lecture de l'URL au cas où la langue a été changée en dehors du widget
     code_depuis_url = st.query_params.get("langue", code_choisi)
     if code_depuis_url in codes and code_depuis_url != st.session_state.get("langue", "fr"):
         st.session_state["langue"] = code_depuis_url
@@ -110,7 +102,6 @@ def render_sidebar() -> tuple[str, str, str, str | None, str]:
 
         _render_selecteur_langue()
 
-        # Séparateur compact sans marge excessive
         st.markdown(
             "<hr style='margin: 4px 0 8px 0; border: none; "
             "border-top: 1px solid #e5e7eb;' />",
@@ -290,9 +281,22 @@ def render_sidebar() -> tuple[str, str, str, str | None, str]:
             unsafe_allow_html=True,
         )
 
-         # Logos partenaires - 2 lignes de 4
-        _LOGOS_DIR = Path(__file__).resolve().parent.parent / "data" / "logos"
+        # Références
+        st.markdown(
+            f"""
+            <div style="font-size:0.70rem;color:#9ca3af;padding:6px 0 4px 0;
+                        border-top:1px solid #e5e7eb;margin-top:4px;">
+                {t('ssp_ref_article')} <a href="{ARTICLE_URL}" target="_blank"
+                style="color:#6b7280;word-break:break-all;">{ARTICLE_URL}</a><br>
+                {t('ssp_ref_auteurs')} {" · ".join(AUTHORS)}<br>
+                {t('ssp_ref_dashboard')} Ayi AMAVIGAN
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
+        # Logos partenaires - 2 lignes de 4
+        _LOGOS_DIR = Path(__file__).resolve().parent.parent / "data" / "logos"
         logos = sorted(_LOGOS_DIR.glob("*.png"), key=lambda p: p.name)
 
         if logos:
