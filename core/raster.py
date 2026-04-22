@@ -26,6 +26,8 @@ import contextily as ctx
 import folium
 import fiona
 from shapely.geometry import shape
+from folium.plugins import MiniMap
+
 
 from dash_anticipyr.core.translations import t
 
@@ -35,7 +37,7 @@ from dash_anticipyr.core.translations import t
 # ---------------------------------------------------------------------------
 PYRENEES_CENTER = [42.6, 0.7]
 PYRENEES_BOUNDS = [[41.5, -2.5], [43.8, 4.0]]
-MIN_ZOOM = 7
+MIN_ZOOM = 4
 MAX_ZOOM = 16
 
 _CTX_SOURCES = {
@@ -463,6 +465,34 @@ def creer_carte_folium(
 
     # Legende
     carte.get_root().html.add_child(folium.Element(html_leg))
+
+    # Dans creer_carte_folium, juste avant carte.fit_bounds(image_bounds)
+
+    reset_btn_html = f"""
+    <div style="position:absolute; top:10px; right:10px; z-index:1000;">
+        <button onclick="
+            var map = Object.values(window)[
+                Object.keys(window).findIndex(k => window[k] && window[k]._leaflet_id)
+            ];
+            map.flyTo([{PYRENEES_CENTER[0]}, {PYRENEES_CENTER[1]}], 9, {{duration: 1.2}});
+        "
+        style="
+            background:white;
+            border:2px solid #ccc;
+            border-radius:6px;
+            padding:6px 10px;
+            cursor:pointer;
+            font-size:13px;
+            font-weight:600;
+            color:#333;
+            box-shadow:0 2px 6px rgba(0,0,0,0.2);
+        "
+        title="">
+            {t("btn_recentrer")}
+        </button>
+    </div>
+    """
+    carte.get_root().html.add_child(folium.Element(reset_btn_html))
 
     carte.fit_bounds(image_bounds)
     return carte

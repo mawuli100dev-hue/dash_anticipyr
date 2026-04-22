@@ -64,6 +64,7 @@ TEXTES_EN: dict[str, str] = {
     "legende_binaire_titre":  "Climate conditions",
     "legende_binaire_0":      "Unfavourable",
     "legende_binaire_1":      "Favourable",
+    "btn_recentrer":          "Recenter on the Pyrenees",
 
     # --- ssp_info.py ---
     "ssp_page_titre":           "## Climate scenarios (SSPs)",
