@@ -128,6 +128,7 @@ def render_map_section(
             horizontal=True,
             key=f"fond_carte_{espece}_{periode_cle}_{ssp_choisi}",
         )
+        st.session_state["fond_carte"] = fond_cle
 
     with col_opacite:
         opacite = st.slider(
@@ -138,6 +139,7 @@ def render_map_section(
             step=0.05,
             key=f"opacite_{espece}_{periode_cle}_{ssp_choisi}",
         )
+        st.session_state["opacite_carte"] = opacite
 
     carte = creer_carte_folium(
         data,
