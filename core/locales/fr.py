@@ -21,14 +21,14 @@ TEXTES_FR: dict[str, str] = {
     "sidebar_current_info":     "<strong>Période actuelle (1970-2000)</strong><br>Aucun scénario SSP - données de référence climatique.",
     "sidebar_ssp_label":        "Scénario climatique (SSP)",
     "sidebar_mode_label":       "Mode de visualisation",
-    "sidebar_mode_help":        "Continu : probabilité de présence entre 0 et 1  |  Absence/Présence : carte binarisée (données déjà 0/1)",
+    "sidebar_mode_help":        "Continu : probabilité de présence entre 0 et 1  |  Défavorable/Favorable : carte binarisée (données déjà 0/1)",
     "sidebar_footer":           "ANTICI'PYR",
     "ssp_126_desc":             "Optimiste",
     "ssp_245_desc":             "Intermédiaire",
     "ssp_370_desc":             "Pessimiste",
     "ssp_585_desc":             "Très pessimiste",
     "mode_continu":             "Continu",
-    "mode_binaire":             "Absence/Présence",
+    "mode_binaire":             "Défavorable/Favorable",
 
     # --- map_section.py ---
     "map_titre":                "Carte interactive",
@@ -48,7 +48,7 @@ TEXTES_FR: dict[str, str] = {
     "map_export_spinner":       "Génération de la carte export...",
     "map_titre_carte_current":  "{espece}  ·  (1970-2000)",
     "map_titre_carte_futur":    "{espece}  ·  {periode} | {ssp}",
-    "map_titre_binaire":        "  ·  Absence/Présence",
+    "map_titre_binaire":        "  ·  Défavorable/Favorable",
     "ssp_manquant":             "`ssp` doit être renseigné pour une période future.",
 
     # --- raster.py ---
@@ -58,10 +58,10 @@ TEXTES_FR: dict[str, str] = {
     "cbar_binaire_label":       "Favorable / Pas favorable",
     "cbar_binaire_0":           "Pas favorable (0)",
     "cbar_binaire_1":           "Favorable (1)",
-    "legende_continu_titre":    "Probabilité de présence",
+    "legende_continu_titre":    "Adéquation climatique",
     "legende_continu_min":      "Pas favorable",
     "legende_continu_max":      "Très favorable",
-    "legende_binaire_titre":    "Habitat",
+    "legende_binaire_titre":    "Conditions climatiques",
     "legende_binaire_0":        "Défavorable",
     "legende_binaire_1":        "Favorable",
 

@@ -46,24 +46,26 @@ def main() -> None:
         pdf_bytes = st.session_state.get("pdf_complet_bytes")
         nom_pdf = st.session_state.get("pdf_complet_nom", "export_complet.pdf")
 
-        if pdf_bytes is not None:
-            st.download_button(
-                label=t("btn_imprimer"),
-                data=pdf_bytes,
-                file_name=nom_pdf,
-                mime="application/pdf",
-                key="btn_imprimer_haut",
-                help=t("btn_imprimer_help"),
-                use_container_width=True,
-            )
-        else:
-            st.button(
-                t("btn_imprimer"),
-                key="btn_imprimer_disabled",
-                disabled=True,
-                help=t("btn_imprimer_loading"),
-                use_container_width=True,
-            )
+        col_btn, _ = st.columns([2, 6])
+        with col_btn:
+            if pdf_bytes is not None:
+                st.download_button(
+                    label=t("btn_imprimer"),
+                    data=pdf_bytes,
+                    file_name=nom_pdf,
+                    mime="application/pdf",
+                    key="btn_imprimer_haut",
+                    help=t("btn_imprimer_help"),
+                    use_container_width=True,
+                )
+            else:
+                st.button(
+                    t("btn_imprimer"),
+                    key="btn_imprimer_disabled",
+                    disabled=True,
+                    help=t("btn_imprimer_loading"),
+                    use_container_width=True,
+                )
 
     tab_carte, tab_ssp, tab_interp = st.tabs([t("tab_carte"), t("tab_ssp"), "Interprétation"])
 

@@ -42,7 +42,7 @@ def render_map_section(
                 f'alt="{espece}"/>',
                 unsafe_allow_html=True,
             )
-            legende_html = f"<em>{espece}</em>"
+            legende_html = ""
             if attribution:
                 auteur = attribution.lstrip("© ").lstrip("(c) ")
                 legende_html += f" © {auteur}"

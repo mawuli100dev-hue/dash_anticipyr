@@ -21,14 +21,14 @@ TEXTES_EN: dict[str, str] = {
     "sidebar_current_info":     "<strong>Current period (1970-2000)</strong><br>No SSP scenario - baseline climate data.",
     "sidebar_ssp_label":        "Climate scenario (SSP)",
     "sidebar_mode_label":       "Visualisation mode",
-    "sidebar_mode_help":        "Continuous: presence probability between 0 and 1  |  Absence/Presence: binarised map (already 0/1 data)",
+    "sidebar_mode_help":        "Continuous: presence probability between 0 and 1  |  Unfavorable/Favorable: binarised map (already 0/1 data)",
     "sidebar_footer":           "ANTICI'PYR",
     "ssp_126_desc":             "Optimistic",
     "ssp_245_desc":             "Intermediate",
     "ssp_370_desc":             "Pessimistic",
     "ssp_585_desc":             "Very pessimistic",
     "mode_continu":             "Continuous",
-    "mode_binaire":             "Absence/Presence",
+    "mode_binaire":             "Unfavorable/Favorable",
 
     # --- map_section.py ---
     "map_titre":                "Interactive map",
@@ -48,7 +48,7 @@ TEXTES_EN: dict[str, str] = {
     "map_export_spinner":       "Generating export map...",
     "map_titre_carte_current":  "{espece}  ·  (1970-2000)",
     "map_titre_carte_futur":    "{espece}  ·  {periode} | {ssp}",
-    "map_titre_binaire":        "  ·  Absence/Presence",
+    "map_titre_binaire":        "  ·  Unfavorable/Favorable",
     "ssp_manquant":             "`ssp` must be provided for a future period.",
 
     # --- raster.py ---
@@ -58,10 +58,10 @@ TEXTES_EN: dict[str, str] = {
     "cbar_binaire_label":       "Suitable / Unsuitable",
     "cbar_binaire_0":           "Unsuitable (0)",
     "cbar_binaire_1":           "Suitable (1)",
-    "legende_continu_titre":  "Presence probability",
+    "legende_continu_titre":  "Climatic suitability",
     "legende_continu_min":      "Unsuitable",
     "legende_continu_max":      "Highly suitable",
-    "legende_binaire_titre":  "Habitat",
+    "legende_binaire_titre":  "Climate conditions",
     "legende_binaire_0":      "Unfavourable",
     "legende_binaire_1":      "Favourable",
 

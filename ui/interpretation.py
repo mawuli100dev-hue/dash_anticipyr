@@ -82,15 +82,6 @@ def render_interpretation() -> None:
         """
 
     st.markdown(
-        f"""
-        <p style="font-size:0.9rem;color:#333;margin-bottom:16px;text-align:justify;">
-            <strong>{t("interp_worldclim_titre")}</strong> {t("interp_worldclim_caption")}
-        </p>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    st.markdown(
         bloc_tableau(titre_temp, "#1565c0", lignes_temp)
         + bloc_tableau(titre_prec, "#2e7d32", lignes_prec),
         unsafe_allow_html=True,

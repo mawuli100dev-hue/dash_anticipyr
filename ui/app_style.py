@@ -13,11 +13,10 @@ def inject_styles() -> None:
         <style>
             /* Sous-titre */
             .main-subtitle {{
-                font-size: 0.85rem;
+                font-size: 0.9rem !important;
                 color: #6b7280;
                 margin: 0;
                 font-style: italic;
-                line-height: 2.4;
             }}
 
             /* Bouton Imprimer du haut uniquement */
@@ -119,9 +118,11 @@ def inject_styles() -> None:
                 content: "{header_titre}";
                 display: block;
                 position: absolute;
-                left: 1.5rem;
+                left: 0;
+                right: 0;
                 top: 50%;
                 transform: translateY(-50%);
+                text-align: center;
                 font-size: 1.7rem;
                 font-weight: 700;
                 color: #1b5e35;
