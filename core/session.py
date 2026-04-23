@@ -20,7 +20,7 @@ def generer_pdf_session(
     opacite=0.7
 ) -> None:
     """PDF fiche scénario sélectionné (comportement actuel)."""
-    est_binaire = (mode_visu == "Absence/Présence")
+    est_binaire = (mode_visu == "Défavorable/Favorable")
     racine = data_cartographies_root()
 
     try:
@@ -44,7 +44,7 @@ def generer_pdf_session(
     else:
         titre_carte = f"{espece}  ·  {periode_label} | {ssp_choisi}"
     if est_binaire:
-        titre_carte += "  ·  Absence/Présence"
+        titre_carte += "  ·  Défavorable/Favorable"
 
     mode_figure = "binaire" if est_binaire else "continu"
     fig = creer_figure(data, bounds, titre_carte, mode=mode_figure, fond=fond, opacite=opacite)
@@ -75,7 +75,7 @@ def generer_pdf_espece_complet(
     - Page 1 : période actuelle (1970-2000)
     - Pages 2-5 : une page par période future, 4 cartes SSP en grille 2x2
     """
-    est_binaire = (mode_visu == "Absence/Présence")
+    est_binaire = (mode_visu == "Défavorable/Favorable")
     racine = data_cartographies_root()
     mode_figure = "binaire" if est_binaire else "continu"
 
@@ -94,7 +94,7 @@ def generer_pdf_espece_complet(
             data, bounds = charger_raster(str(chemin_current))
             titre = f"{espece}  · (1970-2000)"
             if est_binaire:
-                titre += "  ·  Absence/Présence"
+                titre += "  ·  Défavorable/Favorable"
             fig_current = creer_figure(data, bounds, titre, mode=mode_figure, fond=fond, opacite=opacite)
         except Exception:
             pass
@@ -114,7 +114,7 @@ def generer_pdf_espece_complet(
                 data, bounds = charger_raster(str(chemin))
                 titre = f"{espece}  ·  {periode_label} | {ssp}"
                 if est_binaire:
-                    titre += "  ·  Absence/Présence"
+                    titre += "  ·  Défavorable/Favorable"
                 figs_ssp.append(creer_figure(data, bounds, titre, mode=mode_figure, fond=fond, opacite=opacite))
             except Exception:
                 continue

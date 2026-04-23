@@ -8,6 +8,14 @@ TEXTES_ES: dict[str, str] = {
     "btn_imprimer_loading":     "Cargando...",
     "tab_carte":                "Mapa de distribución",
     "tab_ssp":                  "Escenarios SSP",
+    "btn_imprimer_scenario":     "Imprimir la ficha escenario seleccionado",
+    "btn_imprimer_help":         "Imprimir la ficha de especie para el escenario seleccionado",
+    "btn_imprimer_complet":      "Ficha completa de la especie",
+    "btn_imprimer_complet_help": "Imprimir la ficha completa con todos los periodos y los 4 escenarios SSP",
+    "btn_preparer_scenario":      "Preparar ficha de escenario",
+    "btn_preparer_complet":      "Preparar ficha completa",
+    "msg_generation_pdf":       "Generando PDF...",
+
 
     # --- sidebar.py ---
     "sidebar_titre":            "Flora Pirenaica",

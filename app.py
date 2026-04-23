@@ -1,5 +1,3 @@
-# app.py
-
 from __future__ import annotations
 
 import sys
@@ -32,6 +30,44 @@ def main() -> None:
 
     inject_styles()
 
+    # STYLE HARMONISÉ : S'applique aux boutons normaux ET aux boutons de téléchargement
+    st.markdown(
+        """
+        <style>
+        /* Cible les boutons standards ET les boutons de téléchargement */
+        div.stButton > button, [data-testid="stDownloadButton"] button {
+            background-color: #1b5e20 !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 8px !important;
+            font-weight: 600 !important;
+            width: 100% !important;
+            min-height: 3.5em !important; /* Hauteur minimale pour le confort */
+            white-space: normal !important; /* EMPECHE LE TEXTE D'ETRE COUPÉ */
+            word-wrap: break-word !important;
+            padding: 0.5rem !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+
+        /* Effet de survol identique pour les deux */
+        div.stButton > button:hover, [data-testid="stDownloadButton"] button:hover {
+            background-color: #2e7d32 !important;
+            border: none !important;
+            color: white !important;
+        }
+
+        /* Correction spécifique pour le texte à l'intérieur du bouton de téléchargement */
+        [data-testid="stDownloadButton"] button p {
+            color: white !important;
+            margin: 0 !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
     if "fond_carte" not in st.session_state:
         st.session_state["fond_carte"] = "plan"
 
@@ -40,23 +76,21 @@ def main() -> None:
     fond_actuel = st.session_state.get("fond_carte", "plan")
     opacite_actuelle = st.session_state.get("opacite_carte", 0.7)
 
-    # PDF scénario sélectionné
-    generer_pdf_session(espece, periode_label, periode_cle, ssp_choisi, mode_visu, fond=fond_actuel, opacite=opacite_actuelle)
-
-    # PDF fiche complète toutes périodes
-    generer_pdf_espece_complet(espece, mode_visu, fond=fond_actuel, opacite=opacite_actuelle)
-
     st.markdown(
         f'<p class="main-subtitle">{t("main_subtitle")}</p>',
         unsafe_allow_html=True,
     )
 
-    pdf_scenario_bytes = st.session_state.get("pdf_complet_bytes")
-    pdf_scenario_nom   = st.session_state.get("pdf_complet_nom", "export_scenario.pdf")
-    pdf_espece_bytes   = st.session_state.get("pdf_espece_bytes")
-    pdf_espece_nom     = st.session_state.get("pdf_espece_nom", "export_espece_complet.pdf")
+    st.markdown("<div style='height: 12px;'></div>", unsafe_allow_html=True)
 
-    _, col_btn1, col_btn2 = st.columns([5, 2, 2])
+
+    pdf_scenario_bytes = st.session_state.get("pdf_complet_bytes")
+    pdf_scenario_nom = st.session_state.get("pdf_complet_nom", "export_scenario.pdf")
+    pdf_espece_bytes = st.session_state.get("pdf_espece_bytes")
+    pdf_espece_nom = st.session_state.get("pdf_espece_nom", "export_espece_complet.pdf")
+
+    # On élargit un peu les colonnes centrales (2.5 au lieu de 2) pour le texte long
+    col_vide1, col_btn1, col_btn2, col_vide2 = st.columns([2.5, 2.5, 2.5, 2.5])
 
     with col_btn1:
         if pdf_scenario_bytes:
@@ -70,12 +104,11 @@ def main() -> None:
                 use_container_width=True,
             )
         else:
-            st.button(
-                t("btn_imprimer_scenario"),
-                key="btn_scenario_off",
-                disabled=True,
-                use_container_width=True,
-            )
+            # Utilisation de la nouvelle clé "btn_preparer_scenario"
+            if st.button(t("btn_preparer_scenario"), key="btn_scenario_prepare", use_container_width=True):
+                with st.spinner(t("msg_generation_pdf")):
+                    generer_pdf_session(espece, periode_label, periode_cle, ssp_choisi, mode_visu, fond=fond_actuel, opacite=opacite_actuelle)
+                    st.rerun()
 
     with col_btn2:
         if pdf_espece_bytes:
@@ -89,12 +122,11 @@ def main() -> None:
                 use_container_width=True,
             )
         else:
-            st.button(
-                t("btn_imprimer_complet"),
-                key="btn_espece_complet_off",
-                disabled=True,
-                use_container_width=True,
-            )
+            # Utilisation de la nouvelle clé "btn_preparer_complet"
+            if st.button(t("btn_preparer_complet"), key="btn_espece_complet_prepare", use_container_width=True):
+                with st.spinner(t("msg_generation_pdf")):
+                    generer_pdf_espece_complet(espece, mode_visu, fond=fond_actuel, opacite=opacite_actuelle)
+                    st.rerun()
 
     tab_carte, tab_ssp, tab_interp = st.tabs([t("tab_carte"), t("tab_ssp"), "Interprétation"])
 

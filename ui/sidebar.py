@@ -305,15 +305,15 @@ def render_sidebar() -> tuple[str, str, str, str | None, str]:
                 "border-top: 1px solid #e5e7eb;' />",
                 unsafe_allow_html=True,
             )
-            for i in range(0, len(logos), 4):
-                cols = st.columns(4)
+            for i in range(0, len(logos), 3):
+                cols = st.columns(3)
                 for col, logo_path in zip(cols, logos[i:i+4]):
                     with open(logo_path, "rb") as f:
                         b64 = base64.b64encode(f.read()).decode("utf-8")
                     with col:
                         st.markdown(
                             f'<img src="data:image/png;base64,{b64}" '
-                            f'style="width:100%;max-height:36px;object-fit:contain;" '
+                            f'style="width:100%;max-height:56px;object-fit:contain;" '
                             f'alt="{logo_path.stem}" />',
                             unsafe_allow_html=True,
                         )

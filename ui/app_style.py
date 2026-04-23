@@ -7,6 +7,7 @@ from dash_anticipyr.core.translations import t
 
 def inject_styles() -> None:
     header_titre = t("page_title")
+    toggle_label = t("sidebar_toggle_label")
 
     st.markdown(
         f"""
@@ -19,47 +20,54 @@ def inject_styles() -> None:
                 font-style: italic;
             }}
 
-            /* Bouton Imprimer du haut uniquement */
-            .st-key-btn_imprimer_haut button,
-            .st-key-btn_imprimer_disabled button {{
-                background-color: #1b5e35 !important;
-                color: #ffffff !important;
+            /* Texte toujours visible à droite de l'icône sidebar */
+            .sidebar-toggle-label {{
+                position: fixed;
+                top: 0.95rem;
+                left: 3.6rem;
+                z-index: 99999;
+                font-size: 0.72rem;
+                font-weight: 600;
+                color: #1b5e35;
+                background: rgba(240, 250, 243, 0.98);
+                border: 1px solid #d1e7d6;
+                border-radius: 8px;
+                padding: 4px 10px;
+                line-height: 1.1;
+                white-space: nowrap;
+                pointer-events: none;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+            }}
+
+            @media (max-width: 768px) {{
+                .sidebar-toggle-label {{
+                    top: 0.9rem;
+                    left: 3.2rem;
+                    font-size: 0.66rem;
+                    padding: 3px 8px;
+                }}
+            }}
+
+            /* Boutons de téléchargement */
+            [data-testid="stDownloadButton"] button {{
+                background-color: #1b5e20 !important;
+                color: white !important;
                 border: none !important;
-                border-radius: 6px !important;
-                font-size: 0.82rem !important;
+                border-radius: 8px !important;
                 font-weight: 600 !important;
-                width: 100% !important;
-                transition: background-color 0.18s ease !important;
+                width: 100%;
             }}
 
-            .st-key-btn_imprimer_haut button:hover,
-            .st-key-btn_imprimer_disabled button:hover {{
-                background-color: #145228 !important;
-                color: #ffffff !important;
+            [data-testid="stDownloadButton"] button:hover,
+            [data-testid="stDownloadButton"] button:focus,
+            [data-testid="stDownloadButton"] button:active {{
+                background-color: #2e7d32 !important;
+                color: white !important;
+                border: none !important;
             }}
 
-            .st-key-btn_imprimer_haut button p,
-            .st-key-btn_imprimer_disabled button p {{
-                color: #ffffff !important;
-            }}
-
-            /* Les 4 boutons du bas : tous pareils */
-            .stDownloadButton > button {{
-                border: 1px solid #1b5e35 !important;
-                color: #1b5e35 !important;
-                background-color: #ffffff !important;
-                font-weight: 500 !important;
-                border-radius: 6px !important;
-                transition: background-color 0.18s ease, color 0.18s ease !important;
-            }}
-
-            .stDownloadButton > button:hover {{
-                background-color: #1b5e35 !important;
-                color: #ffffff !important;
-            }}
-
-            .stDownloadButton > button p {{
-                color: inherit !important;
+            [data-testid="stDownloadButton"] button p {{
+                color: white !important;
             }}
 
             /* Onglets */
@@ -183,7 +191,7 @@ def inject_styles() -> None:
                 }}
             }}
 
-            /* Bouton d'impression : jamais de retour à la ligne */
+            /* Boutons : jamais de retour à la ligne */
             [data-testid="stDownloadButton"] button,
             [data-testid="stButton"] button {{
                 white-space: nowrap !important;
@@ -192,6 +200,8 @@ def inject_styles() -> None:
                 min-width: 0;
             }}
         </style>
+
+        <div class="sidebar-toggle-label">{toggle_label}</div>
         """,
         unsafe_allow_html=True,
     )
