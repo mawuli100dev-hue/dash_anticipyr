@@ -10,7 +10,7 @@ TEXTES_EN: dict[str, str] = {
     "tab_ssp":                  "SSP Scenarios",
     "btn_imprimer_scenario":     "Print the selected scenario sheet",
     "btn_imprimer_help":         "Print the species sheet for the selected scenario",
-    "btn_imprimer_complet":      "Complete species sheet",
+    "btn_imprimer_complet":      "Print the complete species sheet",
     "btn_imprimer_complet_help": "Print the complete species sheet with all periods and 4 SSP scenarios",
     "btn_preparer_scenario":      "Prepare scenario sheet",
     "btn_preparer_complet":      "Prepare full sheet",

@@ -34,33 +34,34 @@ def main() -> None:
     st.markdown(
         """
         <style>
-        /* Cible les boutons standards ET les boutons de téléchargement */
+        /* Boutons standards ET boutons de téléchargement */
         div.stButton > button, [data-testid="stDownloadButton"] button {
-            background-color: #1b5e20 !important;
-            color: white !important;
-            border: none !important;
-            border-radius: 8px !important;
+            background-color: white !important;
+            color: #1b5e20 !important;
+            border: 1px solid #1b5e20 !important;
+            border-radius: 6px !important;
             font-weight: 600 !important;
             width: 100% !important;
-            min-height: 3.5em !important; /* Hauteur minimale pour le confort */
-            white-space: normal !important; /* EMPECHE LE TEXTE D'ETRE COUPÉ */
+            min-height: 2.8em !important;
+            white-space: normal !important;
             word-wrap: break-word !important;
             padding: 0.5rem !important;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
+            transition: background-color 0.2s ease, color 0.2s ease !important;
         }
 
-        /* Effet de survol identique pour les deux */
+        /* Survol : fond vert, texte blanc */
         div.stButton > button:hover, [data-testid="stDownloadButton"] button:hover {
-            background-color: #2e7d32 !important;
-            border: none !important;
+            background-color: #1b5e20 !important;
+            border: 2px solid #1b5e20 !important;
             color: white !important;
         }
 
-        /* Correction spécifique pour le texte à l'intérieur du bouton de téléchargement */
+        /* Texte interne du bouton de téléchargement */
         [data-testid="stDownloadButton"] button p {
-            color: white !important;
+            color: inherit !important;
             margin: 0 !important;
         }
         </style>

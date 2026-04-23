@@ -48,28 +48,6 @@ def inject_styles() -> None:
                 }}
             }}
 
-            /* Boutons de téléchargement */
-            [data-testid="stDownloadButton"] button {{
-                background-color: #1b5e20 !important;
-                color: white !important;
-                border: none !important;
-                border-radius: 8px !important;
-                font-weight: 600 !important;
-                width: 100%;
-            }}
-
-            [data-testid="stDownloadButton"] button:hover,
-            [data-testid="stDownloadButton"] button:focus,
-            [data-testid="stDownloadButton"] button:active {{
-                background-color: #2e7d32 !important;
-                color: white !important;
-                border: none !important;
-            }}
-
-            [data-testid="stDownloadButton"] button p {{
-                color: white !important;
-            }}
-
             /* Onglets */
             .stTabs [data-baseweb="tab-list"] {{
                 gap: 24px !important;
