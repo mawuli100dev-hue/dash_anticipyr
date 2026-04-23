@@ -15,6 +15,9 @@ from reportlab.pdfgen import canvas
 from dash_anticipyr.core.raster import figure_en_bytes
 from dash_anticipyr.core.translations import t
 
+from pathlib import Path
+from dash_anticipyr.core.translations import get_langue_courante
+
 
 def telecharger_image(url: str) -> BytesIO | None:
     try:
@@ -160,7 +163,7 @@ def generer_pdf_complet(
 
 
 
-def _page_ssp(c, largeur_page: int, hauteur_page: int, marge: int) -> None:
+def _page_ssp(c, largeur_page: int, hauteur_page: int, marge: int, figure_ssp_langue: Path | None = None, figure_ssp_projections: Path | None = None,) -> None:
     """Page SSP : tableau des 4 scénarios avec températures et précipitations."""
     from dash_anticipyr.core.translations import t
 
@@ -284,6 +287,48 @@ def _page_ssp(c, largeur_page: int, hauteur_page: int, marge: int) -> None:
     c.setStrokeColorRGB(0.85, 0.85, 0.85)
     c.line(marge, y, largeur_page - marge, y)
     y -= 14
+
+        # Figures SSP (reproduites depuis l'onglet SSP INFO)
+    y -= 10
+
+    def _inserer_image(chemin: Path, largeur_max: int, hauteur_max: int, x_centre: int):
+        nonlocal y
+        if chemin is None or not chemin.exists():
+            return
+        try:
+            img_orig  = Image.open(str(chemin)).convert("RGBA")
+
+            fond_blanc = Image.new("RGBA", img_orig.size, (255, 255, 255, 255))
+            fond_blanc.paste(img_orig, mask=img_orig.split()[3])  # canal alpha comme masque
+
+            img = fond_blanc.convert("RGB")
+
+            ratio = img.width / img.height
+            larg = min(largeur_max, hauteur_max * ratio)
+            haut = larg / ratio
+            if haut > hauteur_max:
+                haut = hauteur_max
+                larg = haut * ratio
+            x_pos = x_centre - larg / 2
+            c.drawImage(
+                ImageReader(img),
+                x_pos, y - haut,
+                width=larg, height=haut,
+                preserveAspectRatio=True,
+                mask="auto",
+            )
+            y -= haut + 8
+        except Exception:
+            pass
+
+    largeur_dispo = largeur_page - 2 * marge
+    x_centre = largeur_page // 2
+
+    # Figure 1 : ssp_{langue}.png (centrée, largeur réduite comme dans l'onglet)
+    _inserer_image(figure_ssp_langue, largeur_dispo // 2, 160, x_centre)
+
+    # Figure 2 : ssp_projections.png (pleine largeur)
+    _inserer_image(figure_ssp_projections, largeur_dispo, 200, x_centre)
 
     c.setFont("Helvetica-Bold", 10)
     c.setFillColorRGB(0.106, 0.369, 0.208)
@@ -682,7 +727,18 @@ def generer_pdf_multi_periodes(
     # PAGE SSP
     # ----------------------------------------------------------------
     c.showPage()
-    _page_ssp(c, largeur_page, hauteur_page, marge)
+
+    SSP_FIG_DIR = Path(__file__).parent.parent / "data" / "SSP_fig"
+    FIGURE_SSP  = Path(__file__).parent.parent / "data" / "figures" / "ssp_projections.png"
+
+    langue = get_langue_courante()
+    figure_langue = SSP_FIG_DIR / f"ssp_{langue}.png"
+    if not figure_langue.exists():
+        figure_langue = SSP_FIG_DIR / "ssp_fr.png"
+
+    _page_ssp(c, largeur_page, hauteur_page, marge,
+        figure_ssp_langue=figure_langue,
+        figure_ssp_projections=FIGURE_SSP,)
 
     # ----------------------------------------------------------------
     # PAGE INTERPRETATION
