@@ -12,3 +12,5 @@ Shapely
 streamlit
 streamlit_folium
 scipy
+boto3
+python-dotenv

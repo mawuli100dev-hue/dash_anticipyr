@@ -21,7 +21,7 @@ TEXTES_EN: dict[str, str] = {
     "sidebar_sous_titre":       "Select a species, a period and a scenario",
     "sidebar_espece_label":     "Species",
     "sidebar_espece_caption":   "{n} species available",
-    "sidebar_espece_error":     "No species found. Check dash_anticipyr/data/cartographies/.",
+    "sidebar_espece_error":     "No species found.",
     "sidebar_espece_warning":   "Please select a species from the list.",
     "sidebar_espece_help":      "Type after opening to filter the list.",
     "sidebar_periode_label":    "Projection period",

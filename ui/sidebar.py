@@ -1,4 +1,3 @@
-# ui\sidebar.py
 from __future__ import annotations
 
 import base64
@@ -7,7 +6,6 @@ from pathlib import Path
 import streamlit as st
 
 from dash_anticipyr.core.constants import PERIODES, SSP_LIST
-from dash_anticipyr.core.paths import data_cartographies_root
 from dash_anticipyr.core.raster import lister_especes
 from dash_anticipyr.core.translations import init_langue, t
 from dash_anticipyr.ui.sidebar_style import inject_sidebar_styles
@@ -130,8 +128,7 @@ def render_sidebar() -> tuple[str, str, str, str | None, str]:
             unsafe_allow_html=True,
         )
 
-        dossier_racine_defaut = str(data_cartographies_root())
-        especes = lister_especes(dossier_racine_defaut)
+        especes = lister_especes()
 
         if not especes:
             st.error(t("sidebar_espece_error"))
@@ -282,7 +279,6 @@ def render_sidebar() -> tuple[str, str, str, str | None, str]:
             unsafe_allow_html=True,
         )
 
-        # Références
         st.markdown(
             f"""
             <div style="font-size:0.70rem;color:#9ca3af;padding:6px 0 4px 0;
@@ -296,7 +292,6 @@ def render_sidebar() -> tuple[str, str, str, str | None, str]:
             unsafe_allow_html=True,
         )
 
-        # Logos partenaires - 2 lignes de 4
         _LOGOS_DIR = Path(__file__).resolve().parent.parent / "data" / "logos"
         logos = sorted(_LOGOS_DIR.glob("*.png"), key=lambda p: p.name)
 

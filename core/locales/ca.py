@@ -22,7 +22,7 @@ TEXTES_CA: dict[str, str] = {
     "sidebar_sous_titre":       "Seleccioneu una espècie, un període i un escenari",
     "sidebar_espece_label":     "Espècie estudiada",
     "sidebar_espece_caption":   "{n} espècie(s) disponible(s)",
-    "sidebar_espece_error":     "No s'han trobat espècies. Verifiqueu dash_anticipyr/data/cartographies/.",
+    "sidebar_espece_error":     "No s'han trobat espècies.",
     "sidebar_espece_warning":   "Seleccioneu una espècie de la llista.",
     "sidebar_espece_help":      "Escriviu després d'obrir per filtrar la llista.",
     "sidebar_periode_label":    "Període de projecció",

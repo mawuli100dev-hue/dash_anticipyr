@@ -1,13 +1,19 @@
-# core/session.py
 from __future__ import annotations
 
 import streamlit as st
 
-from dash_anticipyr.core.constants import PERIODES, SSP_LIST
+from dash_anticipyr.core.constants import PERIODES, SSP_LIST, B2_BUCKET
 from dash_anticipyr.core.inaturalist import get_photo_espece
-from dash_anticipyr.core.paths import data_cartographies_root
 from dash_anticipyr.core.pdf import construire_nom_fichier, generer_pdf_complet, generer_pdf_multi_periodes
-from dash_anticipyr.core.raster import charger_raster, construire_chemin, creer_figure
+from dash_anticipyr.core.raster import charger_raster, construire_cle, creer_figure, _get_s3
+
+
+def _fichier_existe(cle: str) -> bool:
+    try:
+        _get_s3().head_object(Bucket=B2_BUCKET, Key=cle)
+        return True
+    except Exception:
+        return False
 
 
 def generer_pdf_session(
@@ -19,22 +25,20 @@ def generer_pdf_session(
     fond: str = "plan",
     opacite=0.7
 ) -> None:
-    """PDF fiche scénario sélectionné (comportement actuel)."""
     est_binaire = (mode_visu == "Défavorable/Favorable")
-    racine = data_cartographies_root()
 
     try:
-        chemin_tif = construire_chemin(racine, espece, periode_cle, ssp_choisi, binaire=est_binaire)
+        cle_tif = construire_cle(espece, periode_cle, ssp_choisi, binaire=est_binaire)
     except ValueError:
         st.session_state["pdf_complet_bytes"] = None
         return
 
-    if not chemin_tif.exists():
+    if not _fichier_existe(cle_tif):
         st.session_state["pdf_complet_bytes"] = None
         return
 
     try:
-        data, bounds = charger_raster(str(chemin_tif))
+        data, bounds = charger_raster(cle_tif)
     except Exception:
         st.session_state["pdf_complet_bytes"] = None
         return
@@ -70,16 +74,9 @@ def generer_pdf_espece_complet(
     fond: str = "plan",
     opacite=0.7
 ) -> None:
-    """
-    PDF fiche espèce complète :
-    - Page 1 : période actuelle (1970-2000)
-    - Pages 2-5 : une page par période future, 4 cartes SSP en grille 2x2
-    """
     est_binaire = (mode_visu == "Défavorable/Favorable")
-    racine = data_cartographies_root()
     mode_figure = "binaire" if est_binaire else "continu"
 
-    # Dict des périodes sans "current" pour les pages futures
     PERIODES_FUTURES = {
         label: cle
         for label, cle in PERIODES.items()
@@ -88,10 +85,10 @@ def generer_pdf_espece_complet(
 
     # --- Page 1 : période actuelle ---
     fig_current = None
-    chemin_current = construire_chemin(racine, espece, "current", None, binaire=est_binaire)
-    if chemin_current.exists():
+    cle_current = construire_cle(espece, "current", None, binaire=est_binaire)
+    if _fichier_existe(cle_current):
         try:
-            data, bounds = charger_raster(str(chemin_current))
+            data, bounds = charger_raster(cle_current)
             titre = f"{espece}  · (1970-2000)"
             if est_binaire:
                 titre += "  ·  Défavorable/Favorable"
@@ -105,13 +102,13 @@ def generer_pdf_espece_complet(
         figs_ssp = []
         for ssp in SSP_LIST:
             try:
-                chemin = construire_chemin(racine, espece, periode_cle, ssp, binaire=est_binaire)
+                cle = construire_cle(espece, periode_cle, ssp, binaire=est_binaire)
             except ValueError:
                 continue
-            if not chemin.exists():
+            if not _fichier_existe(cle):
                 continue
             try:
-                data, bounds = charger_raster(str(chemin))
+                data, bounds = charger_raster(cle)
                 titre = f"{espece}  ·  {periode_label} | {ssp}"
                 if est_binaire:
                     titre += "  ·  Défavorable/Favorable"
@@ -126,7 +123,6 @@ def generer_pdf_espece_complet(
         return
 
     photo_url, attribution = get_photo_espece(espece)
-
     pdf_bytes = generer_pdf_multi_periodes(
         espece=espece,
         photo_url=photo_url,

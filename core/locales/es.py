@@ -22,7 +22,7 @@ TEXTES_ES: dict[str, str] = {
     "sidebar_sous_titre":       "Seleccione una especie, un período y un escenario",
     "sidebar_espece_label":     "Especie estudiada",
     "sidebar_espece_caption":   "{n} especie(s) disponible(s)",
-    "sidebar_espece_error":     "No se encontraron especies. Verifique dash_anticipyr/data/cartographies/.",
+    "sidebar_espece_error":     "No se encontraron especies.",
     "sidebar_espece_warning":   "Seleccione una especie de la lista.",
     "sidebar_espece_help":      "Escriba tras abrir para filtrar la lista.",
     "sidebar_periode_label":    "Período de proyección",
