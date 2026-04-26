@@ -17,6 +17,8 @@ from dash_anticipyr.ui.sidebar import render_sidebar
 from dash_anticipyr.ui.ssp_info import render_ssp_info
 from dash_anticipyr.ui.interpretation import render_interpretation
 from dash_anticipyr.core.translations import init_langue, t
+from dash_anticipyr.ui.onboarding import render_onboarding
+
 
 
 def main() -> None:
@@ -30,6 +32,9 @@ def main() -> None:
     )
 
     inject_styles()
+
+    # if not st.session_state.get("_onboarding_done", False):
+    #     render_onboarding()
 
     # STYLE HARMONISÉ : S'applique aux boutons normaux ET aux boutons de téléchargement
     st.markdown(
