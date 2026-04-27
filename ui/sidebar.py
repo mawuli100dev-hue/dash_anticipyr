@@ -271,10 +271,10 @@ def render_sidebar() -> tuple[str, str, str, str | None, str]:
 
 
 
-        if st.button("Revoir le guide", key="btn_revoir_guide"):
-            st.session_state["_onboarding_done"] = False
-            st.session_state["_onboarding_step"] = 0
-            st.rerun()
+        # if st.button("Revoir le guide", key="btn_revoir_guide"):
+        #     st.session_state["_onboarding_done"] = False
+        #     st.session_state["_onboarding_step"] = 0
+        #     st.rerun()
 
         st.divider()
 
