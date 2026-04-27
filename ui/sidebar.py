@@ -1,3 +1,4 @@
+# ui\sidebar.py
 from __future__ import annotations
 
 import base64
@@ -267,6 +268,13 @@ def render_sidebar() -> tuple[str, str, str, str | None, str]:
         )
         st.session_state["mode_visu"] = mode_selectionne
         mode_visu = mode_selectionne
+
+
+
+        if st.button("Revoir le guide", key="btn_revoir_guide"):
+            st.session_state["_onboarding_done"] = False
+            st.session_state["_onboarding_step"] = 0
+            st.rerun()
 
         st.divider()
 

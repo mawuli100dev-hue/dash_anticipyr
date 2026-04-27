@@ -4,7 +4,7 @@ TEXTES_FR: dict[str, str] = {
     "page_title":               "Flore Pyrénéenne - cartes de répartition",
     "main_subtitle":            "Projection de la répartition des conditions climatiques favorables et défavorables aux espèces pyrénéennes",
     "btn_imprimer":             "Imprimer",
-    "btn_imprimer_help":        "Télécharger la fiche PDF complète ou Ctrl+P",
+    "btn_imprimer_help":        "Télécharger la fiche PDF complète",
     "btn_imprimer_loading":     "Chargement en cours...",
     "tab_carte":                "Carte de répartition",
     "tab_ssp":                  "Scénarios SSP",

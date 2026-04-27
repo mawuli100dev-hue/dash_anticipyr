@@ -4,7 +4,7 @@ TEXTES_EN: dict[str, str] = {
     "page_title":               "Pyrenean Flora - distribution maps",
     "main_subtitle":            "Projection of the distribution of favourable and unfavourable climatic conditions for Pyrenean species.",
     "btn_imprimer":             "Print",
-    "btn_imprimer_help":        "Download the full PDF report or Ctrl+P",
+    "btn_imprimer_help":        "Download the full PDF report",
     "btn_imprimer_loading":     "Loading...",
     "tab_carte":                "Distribution map",
     "tab_ssp":                  "SSP Scenarios",

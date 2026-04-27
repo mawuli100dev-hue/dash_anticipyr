@@ -4,7 +4,7 @@ TEXTES_ES: dict[str, str] = {
     "page_title":               "Flora Pirenaica - mapas de distribución",
     "main_subtitle":            "Proyección de la distribución de las condiciones climáticas favorables y desfavorables para las especies pirenaicas.",
     "btn_imprimer":             "Imprimir",
-    "btn_imprimer_help":        "Descargar el informe PDF completo o Ctrl+P",
+    "btn_imprimer_help":        "Descargar el informe PDF completo",
     "btn_imprimer_loading":     "Cargando...",
     "tab_carte":                "Mapa de distribución",
     "tab_ssp":                  "Escenarios SSP",

@@ -4,7 +4,7 @@ TEXTES_CA: dict[str, str] = {
     "page_title":               "Flora Pirinenca - mapes de distribució",
     "main_subtitle":            "Projecció de la distribució de les condicions climàtiques favorables i desfavorables per a les espècies pirinenques.",
     "btn_imprimer":             "Imprimir",
-    "btn_imprimer_help":        "Descarregar l'informe PDF complet o Ctrl+P",
+    "btn_imprimer_help":        "Descarregar l'informe PDF complet",
     "btn_imprimer_loading":     "Carregant...",
     "tab_carte":                "Mapa de distribució",
     "tab_ssp":                  "Escenaris SSP",
