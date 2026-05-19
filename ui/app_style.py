@@ -1,66 +1,52 @@
+# ui\app_style.py
 from __future__ import annotations
 
 import streamlit as st
 
-from dash_anticipyr.core.translations import t
+from core.translations import t
 
 
 def inject_styles() -> None:
     header_titre = t("page_title")
+    toggle_label = t("sidebar_toggle_label")
 
     st.markdown(
         f"""
         <style>
             /* Sous-titre */
             .main-subtitle {{
-                font-size: 0.85rem;
+                font-size: 0.9rem !important;
                 color: #6b7280;
                 margin: 0;
                 font-style: italic;
-                line-height: 2.4;
             }}
 
-            /* Bouton Imprimer du haut uniquement */
-            .st-key-btn_imprimer_haut button,
-            .st-key-btn_imprimer_disabled button {{
-                background-color: #1b5e35 !important;
-                color: #ffffff !important;
-                border: none !important;
-                border-radius: 6px !important;
-                font-size: 0.82rem !important;
-                font-weight: 600 !important;
-                width: 100% !important;
-                transition: background-color 0.18s ease !important;
+            /* Texte toujours visible à droite de l'icône sidebar */
+            .sidebar-toggle-label {{
+                position: fixed;
+                top: 0.95rem;
+                left: 3.6rem;
+                z-index: 99999;
+                font-size: 0.72rem;
+                font-weight: 600;
+                color: #1b5e35;
+                background: rgba(240, 250, 243, 0.98);
+                border: 1px solid #d1e7d6;
+                border-radius: 8px;
+                padding: 4px 10px;
+                line-height: 1.1;
+                white-space: nowrap;
+                pointer-events: none;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
             }}
 
-            .st-key-btn_imprimer_haut button:hover,
-            .st-key-btn_imprimer_disabled button:hover {{
-                background-color: #145228 !important;
-                color: #ffffff !important;
-            }}
-
-            .st-key-btn_imprimer_haut button p,
-            .st-key-btn_imprimer_disabled button p {{
-                color: #ffffff !important;
-            }}
-
-            /* Les 4 boutons du bas : tous pareils */
-            .stDownloadButton > button {{
-                border: 1px solid #1b5e35 !important;
-                color: #1b5e35 !important;
-                background-color: #ffffff !important;
-                font-weight: 500 !important;
-                border-radius: 6px !important;
-                transition: background-color 0.18s ease, color 0.18s ease !important;
-            }}
-
-            .stDownloadButton > button:hover {{
-                background-color: #1b5e35 !important;
-                color: #ffffff !important;
-            }}
-
-            .stDownloadButton > button p {{
-                color: inherit !important;
+            @media (max-width: 768px) {{
+                .sidebar-toggle-label {{
+                    top: 0.9rem;
+                    left: 3.2rem;
+                    font-size: 0.66rem;
+                    padding: 3px 8px;
+                }}
             }}
 
             /* Onglets */
@@ -119,9 +105,11 @@ def inject_styles() -> None:
                 content: "{header_titre}";
                 display: block;
                 position: absolute;
-                left: 1.5rem;
+                left: 0;
+                right: 0;
                 top: 50%;
                 transform: translateY(-50%);
+                text-align: center;
                 font-size: 1.7rem;
                 font-weight: 700;
                 color: #1b5e35;
@@ -181,7 +169,18 @@ def inject_styles() -> None:
                     padding-top: 0.5rem !important;
                 }}
             }}
+
+            /* Boutons : jamais de retour à la ligne */
+            [data-testid="stDownloadButton"] button,
+            [data-testid="stButton"] button {{
+                white-space: nowrap !important;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                min-width: 0;
+            }}
         </style>
+
+        <div class="sidebar-toggle-label">{toggle_label}</div>
         """,
         unsafe_allow_html=True,
     )

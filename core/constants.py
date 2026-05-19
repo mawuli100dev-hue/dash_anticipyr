@@ -1,7 +1,9 @@
+# core\constants.py
 from __future__ import annotations
 
 from typing import Dict, List
-
+import os
+from dotenv import load_dotenv
 # Correspondance : libellé affiché -> clé interne (current ou année de projection)
 PERIODES: Dict[str, str] = {
     "1970–2000": "current",
@@ -21,3 +23,10 @@ MODE_MAP: Dict[str, str] = {
 
 # Seuil par défaut pour la binarisation (modifiable ici uniquement)
 SEUIL_BINARISATION: float = 0.5
+
+load_dotenv()
+
+B2_KEY_ID = os.getenv("B2_KEY_ID")
+B2_APPLICATION_KEY = os.getenv("B2_APPLICATION_KEY")
+B2_ENDPOINT = os.getenv("B2_ENDPOINT")
+B2_BUCKET = os.getenv("B2_BUCKET")

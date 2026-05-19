@@ -1,5 +1,7 @@
 # dash_anticipyr/core/inaturalist.py
 
+from __future__ import annotations
+
 import requests
 import streamlit as st
 
@@ -32,11 +34,12 @@ def get_photo_espece(nom_scientifique: str) -> tuple[str | None, str | None]:
         return None, None
 
     resultats = response.json().get("results", [])
-
     if not resultats:
         return None, None
 
     taxon = resultats[0]
+
+    photo_url = None
     default_photo = taxon.get("default_photo")
 
     if not default_photo:
