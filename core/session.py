@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import streamlit as st
 
-from dash_anticipyr.core.constants import PERIODES, SSP_LIST, B2_BUCKET
-from dash_anticipyr.core.inaturalist import get_photo_espece
-from dash_anticipyr.core.pdf import construire_nom_fichier, generer_pdf_complet, generer_pdf_multi_periodes
-from dash_anticipyr.core.raster import charger_raster, construire_cle, creer_figure, _get_s3
+from core.constants import PERIODES, SSP_LIST, B2_BUCKET
+from core.inaturalist import get_photo_espece
+from core.pdf import construire_nom_fichier, generer_pdf_complet, generer_pdf_multi_periodes
+from core.raster import charger_raster, construire_cle, creer_figure, _get_s3
 
 
 def _fichier_existe(cle: str) -> bool:

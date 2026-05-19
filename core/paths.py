@@ -4,7 +4,7 @@ import boto3
 from botocore.exceptions import ClientError
 
 # --- Config B2 ---
-from dash_anticipyr.core.constants import B2_KEY_ID, B2_APPLICATION_KEY, B2_ENDPOINT, B2_BUCKET
+from core.constants import B2_KEY_ID, B2_APPLICATION_KEY, B2_ENDPOINT, B2_BUCKET
 
 
 def get_s3_client():

@@ -4,9 +4,9 @@ import io
 import streamlit as st
 from streamlit_folium import st_folium
 
-from dash_anticipyr.core.inaturalist import get_photo_espece
-from dash_anticipyr.core.pdf import construire_nom_fichier
-from dash_anticipyr.core.raster import (
+from core.inaturalist import get_photo_espece
+from core.pdf import construire_nom_fichier
+from core.raster import (
     charger_raster,
     construire_cle,
     creer_figure,
@@ -14,9 +14,9 @@ from dash_anticipyr.core.raster import (
     figure_en_bytes,
     _get_s3
 )
-from dash_anticipyr.core.constants import B2_BUCKET
+from core.constants import B2_BUCKET
 
-from dash_anticipyr.core.translations import t, get_langue_courante
+from core.translations import t, get_langue_courante
 
 
 def _bytes_export(cle_b2: str, titre: str, mode: str, fmt: str, fond: str, langue: str, opacite: float) -> bytes:

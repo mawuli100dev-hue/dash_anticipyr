@@ -30,12 +30,12 @@ from folium.plugins import MiniMap
 
 import boto3
 
-from dash_anticipyr.core.translations import t
+from core.translations import t
 
 # ---------------------------------------------------------------------------
 # Config B2
 # ---------------------------------------------------------------------------
-from dash_anticipyr.core.constants import B2_KEY_ID, B2_APPLICATION_KEY, B2_ENDPOINT, B2_BUCKET
+from core.constants import B2_KEY_ID, B2_APPLICATION_KEY, B2_ENDPOINT, B2_BUCKET
 
 SHAPEFILE_PYRENEES = Path(__file__).parent.parent / "data" / "border" / "polygon_PYRENEES.shp"
 

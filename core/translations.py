@@ -4,10 +4,10 @@ from __future__ import annotations
 
 import streamlit as st
 
-from dash_anticipyr.core.locales.fr import TEXTES_FR
-from dash_anticipyr.core.locales.en import TEXTES_EN
-from dash_anticipyr.core.locales.es import TEXTES_ES
-from dash_anticipyr.core.locales.ca import TEXTES_CA
+from core.locales.fr import TEXTES_FR
+from core.locales.en import TEXTES_EN
+from core.locales.es import TEXTES_ES
+from core.locales.ca import TEXTES_CA
 
 # ---------------------------------------------------------------------------
 # Assemblage

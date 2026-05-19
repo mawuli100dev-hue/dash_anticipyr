@@ -4,7 +4,7 @@ import json
 import streamlit as st
 import streamlit.components.v1 as components
 
-from dash_anticipyr.core.translations import t
+from core.translations import t
 
 
 def inject_shepherd_tour() -> None:

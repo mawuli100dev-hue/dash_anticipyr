@@ -12,11 +12,11 @@ from PIL import Image
 from reportlab.lib.utils import ImageReader
 from reportlab.pdfgen import canvas
 
-from dash_anticipyr.core.raster import figure_en_bytes
-from dash_anticipyr.core.translations import t
+from core.raster import figure_en_bytes
+from core.translations import t
 
 from pathlib import Path
-from dash_anticipyr.core.translations import get_langue_courante
+from core.translations import get_langue_courante
 
 
 def telecharger_image(url: str) -> BytesIO | None:
@@ -165,7 +165,7 @@ def generer_pdf_complet(
 
 def _page_ssp(c, largeur_page: int, hauteur_page: int, marge: int, figure_ssp_langue: Path | None = None, figure_ssp_projections: Path | None = None,) -> None:
     """Page SSP : tableau des 4 scénarios avec températures et précipitations."""
-    from dash_anticipyr.core.translations import t
+    from core.translations import t
 
     SSP_DATA = [
         {"ssp": "SSP 126", "couleur": (0.18, 0.49, 0.20), "dt": "+2,16 °C",  "dp": "-3,56 mm"},
@@ -400,7 +400,7 @@ def _page_ssp(c, largeur_page: int, hauteur_page: int, marge: int, figure_ssp_la
 
 def _page_interpretation(c, largeur_page: int, hauteur_page: int, marge: int) -> None:
     """Page interprétation : tableau des 19 variables bioclimatiques."""
-    from dash_anticipyr.core.translations import t
+    from core.translations import t
 
     BIO_VARIABLES = [
         ("BIO1",  "bio1_nom",  "bio1_desc",  "°C"),

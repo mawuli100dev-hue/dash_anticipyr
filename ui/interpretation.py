@@ -5,7 +5,7 @@ from pathlib import Path
 
 import streamlit as st
 
-from dash_anticipyr.core.translations import t
+from core.translations import t
 
 
 BIO_VARIABLES = [

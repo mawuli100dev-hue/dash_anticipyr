@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import rasterio.coords
 
-from dash_anticipyr.core.constants import SEUIL_BINARISATION
+from core.constants import SEUIL_BINARISATION
 
 PYRENEES_BOUNDS = {
     "lat_min": 41.8,

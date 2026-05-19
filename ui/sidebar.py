@@ -6,10 +6,10 @@ from pathlib import Path
 
 import streamlit as st
 
-from dash_anticipyr.core.constants import PERIODES, SSP_LIST
-from dash_anticipyr.core.raster import lister_especes
-from dash_anticipyr.core.translations import init_langue, t
-from dash_anticipyr.ui.sidebar_style import inject_sidebar_styles
+from core.constants import PERIODES, SSP_LIST
+from core.raster import lister_especes
+from core.translations import init_langue, t
+from ui.sidebar_style import inject_sidebar_styles
 
 
 _FLAGS_DIR = Path(__file__).resolve().parent.parent / "data" / "flags"

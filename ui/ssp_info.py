@@ -5,7 +5,7 @@ from pathlib import Path
 
 import streamlit as st
 
-from dash_anticipyr.core.translations import t, get_langue_courante
+from core.translations import t, get_langue_courante
 
 SSP_FIG_DIR = Path(__file__).parent.parent / "data" / "SSP_fig"
 

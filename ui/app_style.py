@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import streamlit as st
 
-from dash_anticipyr.core.translations import t
+from core.translations import t
 
 
 def inject_styles() -> None:
