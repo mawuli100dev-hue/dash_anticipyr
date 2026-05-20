@@ -16,7 +16,6 @@ def inject_styles() -> None:
 
             #MainMenu {{visibility: hidden;}}
             footer {{visibility: hidden;}}
-            header {{visibility: hidden;}}
 
             /* Cache le bouton/profil en bas à droite */
             .stAppDeployButton {{
