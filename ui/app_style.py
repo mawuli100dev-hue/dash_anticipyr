@@ -13,6 +13,31 @@ def inject_styles() -> None:
     st.markdown(
         f"""
         <style>
+
+            #MainMenu {{visibility: hidden;}}
+            footer {{visibility: hidden;}}
+            header {{visibility: hidden;}}
+
+            /* Cache le bouton/profil en bas à droite */
+            .stAppDeployButton {{
+                visibility: hidden;
+            }}
+
+            /* Cache aussi certains éléments flottants Streamlit */
+            [data-testid="stToolbar"] {{
+                display: none;
+            }}
+
+            [data-testid="stDecoration"] {{
+                display: none;
+            }}
+
+            [data-testid="stStatusWidget"] {{
+                visibility: hidden;
+                height: 0%;
+                position: fixed;
+            }}
+
             /* Sous-titre */
             .main-subtitle {{
                 font-size: 0.9rem !important;
