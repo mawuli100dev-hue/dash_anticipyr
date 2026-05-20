@@ -2,19 +2,22 @@ name: Keep Alive
 
 on:
   schedule:
-    - cron: "0 */10 * * *" # toutes les 10 heures
-  workflow_dispatch: # permet aussi de le lancer manuellement
+    - cron: "0 */10 * * *"
+  workflow_dispatch:
 
 jobs:
   empty-commit:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: version-2
 
       - name: Create empty commit
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git commit --allow-empty -m "keep alive"
-          git push
+          git push origin version-2
