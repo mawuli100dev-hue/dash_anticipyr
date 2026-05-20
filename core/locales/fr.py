@@ -4,7 +4,6 @@ TEXTES_FR: dict[str, str] = {
     "page_title":               "Flore Pyrénéenne - cartes de répartition",
     "main_subtitle":            "Projection de la répartition des conditions climatiques favorables et défavorables aux espèces pyrénéennes",
     "btn_imprimer":             "Imprimer",
-    "btn_imprimer_help":        "Télécharger la fiche PDF complète",
     "btn_imprimer_loading":     "Chargement en cours...",
     "tab_carte":                "Carte de répartition",
     "tab_ssp":                  "Scénarios SSP",
@@ -23,7 +22,7 @@ TEXTES_FR: dict[str, str] = {
     "sidebar_sous_titre":       "Sélectionnez une espèce, une période et un scénario",
     "sidebar_espece_label":     "Espèce étudiée",
     "sidebar_espece_caption":   "{n} espèce(s) disponible(s)",
-    "sidebar_espece_error":     "Aucune espèce trouvée.s",
+    "sidebar_espece_error":     "Aucune espèce trouvée.",
     "sidebar_espece_warning":   "Sélectionnez une espèce dans la liste.",
     "sidebar_espece_help":      "Tapez après ouverture pour filtrer la liste.",
     "sidebar_periode_label":    "Période de projection",
@@ -102,23 +101,8 @@ TEXTES_FR: dict[str, str] = {
     "ssp_valeurs_moyennes": "Valeurs moyennes estimées pour la chaîne des Pyrénées",
 
 
-    "howto_step1_titre": "Choisir une espèce",
-    "howto_step1_desc":  "Sélectionnez une espèce dans cette liste déroulante pour charger ses cartes de distribution.",
-    "howto_step2_titre": "Choisir une période",
-    "howto_step2_desc":  "Sélectionnez la période temporelle : actuelle ou une projection future.",
-    "howto_step3_titre": "Choisir un scénario",
-    "howto_step3_desc":  "Pour une période future, choisissez un scénario climatique SSP.",
-    "howto_step4_titre": "Explorer la carte",
-    "howto_step4_desc":  "Naviguez entre la carte interactive et les informations sur les scénarios.",
-    "howto_step5_titre": "Télécharger",
-    "howto_step5_desc":  "Exportez la carte en PNG, JPG, PDF ou TIF avec le fond de carte choisi.",
-    "howto_next":        "Suivant →",
-    "howto_prev":        "← Précédent",
-    "howto_fermer":      "Terminer",
-    "howto_btn":         "Comment utiliser ?",
-
-
     # --- interpretation.py ---
+    "tab_interpretation": "Interprétation",
     "interp_intro_1":       "L'étude repose sur un outil central de l'écologie contemporaine : les modèles de distribution d'espèces (Species Distribution Models, SDM). Dans leur forme la plus complète, les SDM intègrent de multiples dimensions écologiques (climat, dispersion, interactions biotiques, génétique). Ils caractérisent ainsi où et pourquoi une espèce se maintient.",
     "interp_intro_2":       "Les cartes de répartition des espèces pyrénéennes sont construites à partir de variables climatiques, en particulier les précipitations et les températures. Elles résultent du croisement entre des données de présence (relevés de terrain, spécimens d'herbier, bases de données en ligne) et un ensemble de variables environnementales caractérisant les conditions des sites occupés (voir tableau ci-dessous).",
     "interp_conclusion":    "Les modèles permettent de définir les combinaisons climatiques associées à la présence (ou l'absence) de l'espèce, et donc les environnements où elle est susceptible de se maintenir. Ce portrait établi, il devient possible d'étudier l'évolution de ces conditions sous différents climats futurs pour estimer où l'espèce pourrait subsister, migrer ou disparaître.",
@@ -168,4 +152,90 @@ TEXTES_FR: dict[str, str] = {
     "bio18_desc":"Précipitation totale du trimestre le plus chaud",
     "bio19_nom": "Précipitation du trimestre le plus froid",
     "bio19_desc":"Précipitation totale du trimestre le plus froid",
+
+    # --- tutorial.py ---
+
+    "tab_tutorial": "Tutoriel",
+
+    "tutorial_sidebar_title": "Comprendre la barre latérale",
+    "tutorial_sidebar_intro": (
+        "La barre latérale regroupe tous les réglages qui contrôlent la carte : "
+        "langue, espèce étudiée, période de projection et scénario climatique (SSP). "
+        "Chaque choix modifie directement la carte affichée au centre de l'écran."
+    ),
+    "tutorial_sidebar_lang": (
+        "En haut, choisissez la langue d'affichage de l'application."
+    ),
+    "tutorial_sidebar_species": (
+        "Sélectionnez ensuite l'espèce étudiée dans la liste déroulante. "
+        "Le nombre d'espèces disponibles est indiqué juste au-dessus."
+    ),
+    "tutorial_sidebar_period": (
+        "Choisissez la période de projection (par exemple 2021–2040)."
+    ),
+    "tutorial_sidebar_ssp": (
+        "Choisissez ensuite un scénario climatique (SSP 126, 245, 370 ou 585). "
+        "Les boutons colorés vont du plus optimiste (vert) au plus pessimiste (rouge)."
+    ),
+    "tutorial_sidebar_mode": (
+        "Enfin, le mode de visualisation permet d'afficher soit une probabilité de présence "
+        "continue, soit une carte binaire Défavorabe/Favorable."
+    ),
+
+
+    "tutorial_header_title": "Comprendre les boutons d'action",
+    "tutorial_header_intro": (
+        "En haut de la page, deux boutons permettent de préparer et d'imprimer "
+        "des fiches au format PDF pour l'espèce sélectionnée."
+    ),
+    "tutorial_header_prepare_scenario": (
+        "Préparer la fiche scénario : génère une fiche pour la combinaison "
+        "période + scénario climatique actuellement sélectionnée."
+    ),
+    "tutorial_header_prepare_full": (
+        "Préparer la fiche complète : génère une fiche regroupant toutes les périodes "
+        "et les quatre scénarios SSP pour l'espèce choisie."
+    ),
+    "tutorial_header_tabs": (
+        "Les onglets Carte de répartition, Scénarios SSP, Interprétation et Tutoriel "
+        "permettent de passer d’une vue à l’autre de l’outil."
+    ),
+
+
+    "tutorial_map_title": "Fond de carte et opacité",
+    "tutorial_map_intro": (
+        "La carte interactive affiche la prédiction de présence de l'espèce superposée "
+        "à un fond de carte (plan ou satellite)."
+    ),
+    "tutorial_map_basemap": (
+        "Fond de carte : choisissez Plan (carte routière détaillée) ou Satellite "
+        "pour mieux voir le relief et l'occupation du sol."
+    ),
+    "tutorial_map_opacity": (
+        "Opacité de la prédiction : le curseur règle la transparence de la couche "
+        "de prédiction. Une opacité faible laisse davantage apparaître le fond de carte, "
+        "une opacité élevée met en avant les zones favorables ou défavorables."
+    ),
+    "tutorial_map_recentre": (
+        "Recentrer sur les Pyrénées : recentre automatiquement la carte sur l'ensemble du massif."
+    ),
+
+
+    "tutorial_export_title": "Télécharger la carte sélectionnée",
+    "tutorial_export_intro": (
+        "Une fois la carte affichée (espèce, période, scénario et mode de visualisation choisis), "
+        "vous pouvez l’exporter dans plusieurs formats."
+    ),
+    "tutorial_export_png": (
+        "PNG : image de bonne qualité, adaptée à l’affichage à l’écran ou dans des diapositives."
+    ),
+    "tutorial_export_jpg": (
+        "JPG : image compressée, pratique pour des fichiers plus légers (web, mails, etc.)."
+    ),
+    "tutorial_export_pdf": (
+        "PDF : document pratique pour l’impression ou l’intégration dans des rapports."
+    ),
+    "tutorial_export_tif": (
+        "TIF : fichier raster géoréférencé destiné à un usage dans des logiciels SIG (QGIS, etc.)."
+    ),
 }

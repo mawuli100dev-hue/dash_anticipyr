@@ -4,7 +4,6 @@ TEXTES_EN: dict[str, str] = {
     "page_title":               "Pyrenean Flora - distribution maps",
     "main_subtitle":            "Projection of the distribution of favourable and unfavourable climatic conditions for Pyrenean species.",
     "btn_imprimer":             "Print",
-    "btn_imprimer_help":        "Download the full PDF report",
     "btn_imprimer_loading":     "Loading...",
     "tab_carte":                "Distribution map",
     "tab_ssp":                  "SSP Scenarios",
@@ -28,14 +27,14 @@ TEXTES_EN: dict[str, str] = {
     "sidebar_current_info":     "<strong>Current period (1970-2000)</strong><br>No SSP scenario - baseline climate data.",
     "sidebar_ssp_label":        "Climate scenario (SSP)",
     "sidebar_mode_label":       "Visualisation mode",
-    "sidebar_mode_help":        "Continuous: presence probability between 0 and 1  |  Unfavorable/Favorable: binarised map (already 0/1 data)",
+    "sidebar_mode_help":        "Continuous: presence probability between 0 and 1  |  Unfavourable/Favourable: binarised map (0/1 data)",
     "sidebar_footer":           "ANTICI'PYR",
     "ssp_126_desc":             "Optimistic",
     "ssp_245_desc":             "Intermediate",
     "ssp_370_desc":             "Pessimistic",
     "ssp_585_desc":             "Very pessimistic",
     "mode_continu":             "Continuous",
-    "mode_binaire":             "Unfavorable/Favorable",
+    "mode_binaire":             "Unfavourable/Favourable",
 
     # --- map_section.py ---
     "map_titre":                "Interactive map",
@@ -55,7 +54,7 @@ TEXTES_EN: dict[str, str] = {
     "map_export_spinner":       "Generating export map...",
     "map_titre_carte_current":  "{espece}  ·  (1970-2000)",
     "map_titre_carte_futur":    "{espece}  ·  {periode} | {ssp}",
-    "map_titre_binaire":        "  ·  Unfavorable/Favorable",
+    "map_titre_binaire":        "  ·  Unfavourable/Favourable",
     "ssp_manquant":             "`ssp` must be provided for a future period.",
 
     # --- raster.py ---
@@ -76,7 +75,7 @@ TEXTES_EN: dict[str, str] = {
     # --- ssp_info.py ---
     "ssp_page_titre":           "## Climate scenarios (SSPs)",
     "ssp_intro":                "**SSPs** (Shared Socioeconomic Pathways) describe socioeconomic trajectories leading to different levels of greenhouse gas emissions. This dashboard presents the climatic conditions favourable to Pyrenean species, projected under four climate scenarios up to the period 2081-2100.",
-    "ssp_recap_titre":          "### Summary of projected climatic conditions for the 2081-2100 horizon, averaged across the Pyrenean range.",
+    "ssp_recap_titre":          "### Summary of projected climatic conditions for the 2081-2100 horizon, averaged across the Pyrenean range",
     "ssp_recap_col_ssp":        "SSP",
     "ssp_recap_col_emissions":  "Emissions",
     "ssp_recap_col_dt":         "Delta T (°C)",
@@ -99,23 +98,9 @@ TEXTES_EN: dict[str, str] = {
     "ssp_precipitations":       "Precipitation (2090):",
     "ssp_valeurs_moyennes": "Estimated mean values for the Pyrenean range",
 
+    # --- interpretation.py ---
 
-    "howto_step1_titre": "Choose a species",
-    "howto_step1_desc":  "Select a species from this dropdown to load its distribution maps.",
-    "howto_step2_titre": "Choose a period",
-    "howto_step2_desc":  "Select the time period: current or a future projection.",
-    "howto_step3_titre": "Choose a scenario",
-    "howto_step3_desc":  "For a future period, choose a SSP climate scenario.",
-    "howto_step4_titre": "Explore the map",
-    "howto_step4_desc":  "Navigate between the interactive map and scenario information.",
-    "howto_step5_titre": "Download",
-    "howto_step5_desc":  "Export the map as PNG, JPG, PDF or TIF with the chosen basemap.",
-    "howto_next":        "Next →",
-    "howto_prev":        "← Back",
-    "howto_fermer":      "Finish",
-    "howto_btn":         "How to use?",
-
-
+    "tab_interpretation": "Interpretation",
     "interp_intro_1":       "This study relies on a central tool of contemporary ecology: Species Distribution Models (SDMs). In their most complete form, SDMs integrate multiple ecological dimensions (climate, dispersal, biotic interactions, genetics), characterising where and why a species persists.",
     "interp_intro_2":       "Distribution maps of Pyrenean species are built from climatic variables, particularly precipitation and temperature. They result from the combination of presence data (field surveys, herbarium specimens, online databases) with a set of environmental variables characterising the conditions at occupied sites (see table below).",
     "interp_conclusion":    "Models define the climatic combinations associated with the presence (or absence) of the species, and therefore the environments where it is likely to persist. Once this portrait is established, it becomes possible to study how these conditions evolve under different future climates to estimate where the species could survive, migrate or disappear.",
@@ -165,4 +150,89 @@ TEXTES_EN: dict[str, str] = {
     "bio18_desc":"Total precipitation of the warmest quarter",
     "bio19_nom": "Precipitation of coldest quarter",
     "bio19_desc":"Total precipitation of the coldest quarter",
+
+    # --- tutorial.py ---
+
+    "tab_tutorial": "Tutorial",
+
+    "tutorial_sidebar_title": "Understanding the sidebar",
+    "tutorial_sidebar_intro": (
+        "The sidebar groups all the settings that control the map: "
+        "language, species, projection period and climate scenario (SSP). "
+        "Each choice directly changes the map displayed in the centre of the screen."
+    ),
+    "tutorial_sidebar_lang": (
+        "At the top, choose the display language of the application."
+    ),
+    "tutorial_sidebar_species": (
+        "Then select the study species from the dropdown list. "
+        "The number of available species is shown just above."
+    ),
+    "tutorial_sidebar_period": (
+        "Choose the projection period (for example 2021–2040)."
+    ),
+    "tutorial_sidebar_ssp": (
+        "Next, choose a climate scenario (SSP 126, 245, 370 or 585). "
+        "The coloured buttons go from the most optimistic (green) to the most pessimistic (red)."
+    ),
+    "tutorial_sidebar_mode": (
+        "Finally, the visualisation mode lets you display either a continuous "
+        "probability of presence or a binary Unsuitable/Suitable map."
+    ),
+
+
+    "tutorial_header_title": "Understanding the action buttons",
+    "tutorial_header_intro": (
+        "At the top of the page, two buttons let you prepare and print "
+        "PDF sheets for the selected species."
+    ),
+    "tutorial_header_prepare_scenario": (
+        "Prepare scenario sheet: generates a sheet for the current "
+        "combination of period and climate scenario."
+    ),
+    "tutorial_header_prepare_full": (
+        "Prepare full sheet: generates a sheet that gathers all periods "
+        "and the four SSP scenarios for the chosen species."
+    ),
+    "tutorial_header_tabs": (
+        "The tabs Distribution map, SSP scenarios, Interpretation and Tutorial "
+        "allow you to switch between the different views of the tool."
+    ),
+
+
+    "tutorial_map_title": "Basemap and opacity",
+    "tutorial_map_intro": (
+        "The interactive map displays the predicted presence of the species overlaid "
+        "on a basemap (plan or satellite)."
+    ),
+    "tutorial_map_basemap": (
+        "Basemap: choose Map (detailed road map) or Satellite "
+        "to better see relief and land cover."
+    ),
+    "tutorial_map_opacity": (
+        "Prediction opacity: the slider controls the transparency of the prediction layer. "
+        "Low opacity reveals more of the basemap, high opacity highlights suitable or unsuitable areas."
+    ),
+    "tutorial_map_recentre": (
+        "Recenter on the Pyrenees: automatically recentres the map on the whole mountain range."
+    ),
+
+
+    "tutorial_export_title": "Download the selected map",
+    "tutorial_export_intro": (
+        "Once the map is displayed (species, period, scenario and visualisation mode chosen), "
+        "you can export it in several formats."
+    ),
+    "tutorial_export_png": (
+        "PNG: good-quality image, suitable for screen display or slides."
+    ),
+    "tutorial_export_jpg": (
+        "JPG: compressed image, useful for lighter files (web, emails, etc.)."
+    ),
+    "tutorial_export_pdf": (
+        "PDF: convenient document for printing or including in reports."
+    ),
+    "tutorial_export_tif": (
+        "TIF: georeferenced raster file for use in GIS software (QGIS, etc.)."
+    ),
 }

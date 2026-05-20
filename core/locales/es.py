@@ -40,7 +40,7 @@ TEXTES_ES: dict[str, str] = {
 
     # --- map_section.py ---
     "map_titre":                "Mapa interactivo",
-    "map_caption":              "Zoom libre hasta los pueblos. Zoom alejado limitado a la región pirenaica.",
+    "map_caption":              "Zoom libre hasta los pueblos; alejamiento limitado a la región pirenaica.",
     "map_fond_label":           "Mapa base",
     "map_fond_plan":            "Mapa",
     "map_fond_satellite":       "Satélite",
@@ -53,7 +53,7 @@ TEXTES_ES: dict[str, str] = {
     "map_no_photo":             "No hay foto disponible en iNaturalist para esta especie.",
     "map_fichier_introuvable":  "**Archivo no encontrado:**\n`{chemin}`\n\nVerifique que las predicciones han sido generadas para esta combinación.",
     "map_erreur_tif":           "Error al leer el archivo TIF:\n`{e}`",
-    "map_export_spinner":       "Generando mapa de exportación...",
+    "map_export_spinner":       "Generando el mapa para exportar...",
     "map_titre_carte_current":  "{espece}  ·  (1970-2000)",
     "map_titre_carte_futur":    "{espece}  ·  {periode} | {ssp}",
     "map_titre_binaire":        "  ·  Desfavorable/Favorable",
@@ -61,13 +61,13 @@ TEXTES_ES: dict[str, str] = {
 
     # --- raster.py ---
     "cbar_continu_label":       "Probabilidad de presencia",
-    "cbar_continu_min":         "0.0\n(No favorable)",
+    "cbar_continu_min":         "0.0\n(Desfavorable)",
     "cbar_continu_max":         "1.0\n(Muy favorable)",
-    "cbar_binaire_label":       "Favorable / No favorable",
-    "cbar_binaire_0":           "No favorable (0)",
+    "cbar_binaire_label":       "Desfavorable / Favorable",
+    "cbar_binaire_0":           "Desfavorable (0)",
     "cbar_binaire_1":           "Favorable (1)",
     "legende_continu_titre":    "Adecuación climática",
-    "legende_continu_min":         "No favorable",
+    "legende_continu_min":         "Desfavorable",
     "legende_continu_max":         "Muy favorable",
     "legende_binaire_titre":    "Condiciones climáticas",
     "legende_binaire_0":        "Desfavorable",
@@ -77,7 +77,7 @@ TEXTES_ES: dict[str, str] = {
     # --- ssp_info.py ---
     "ssp_page_titre":           "## Escenarios climáticos (SSPs)",
     "ssp_intro":                "Los **SSPs** (Shared Socioeconomic Pathways) describen trayectorias socioeconómicas que conducen a diferentes niveles de emisiones de gases de efecto invernadero. Este panel presenta las condiciones climáticas favorables para las especies pirenaicas, proyectadas según cuatro escenarios climáticos hasta el periodo 2081-2100.",
-    "ssp_recap_titre":          "### Resumen de las condiciones climáticas proyectadas para el horizonte 2081-2100, promediadas sobre la cadena pirenaica.",
+    "ssp_recap_titre":          "### Resumen de las condiciones climáticas proyectadas para el horizonte 2081-2100, promediadas sobre la cadena pirenaica",
     "ssp_recap_col_ssp":        "SSP",
     "ssp_recap_col_emissions":  "Emisiones",
     "ssp_recap_col_dt":         "Delta T (°C)",
@@ -100,22 +100,8 @@ TEXTES_ES: dict[str, str] = {
     "ssp_precipitations":       "Precipitaciones (2090):",
     "ssp_valeurs_moyennes": "Valores medios estimados para la cadena pirenaica",
 
-
-    "howto_step1_titre": "Elegir una especie",
-    "howto_step1_desc":  "Seleccione una especie en esta lista para cargar sus mapas de distribución.",
-    "howto_step2_titre": "Elegir un período",
-    "howto_step2_desc":  "Seleccione el período temporal: actual o una proyección futura.",
-    "howto_step3_titre": "Elegir un escenario",
-    "howto_step3_desc":  "Para un período futuro, elija un escenario climático SSP.",
-    "howto_step4_titre": "Explorar el mapa",
-    "howto_step4_desc":  "Navegue entre el mapa interactivo y la información sobre los escenarios.",
-    "howto_step5_titre": "Descargar",
-    "howto_step5_desc":  "Exporte el mapa en PNG, JPG, PDF o TIF con el fondo de mapa elegido.",
-    "howto_next":        "Siguiente →",
-    "howto_prev":        "← Anterior",
-    "howto_fermer":      "Terminar",
-    "howto_btn":         "¿Cómo usar?",
-
+    # --- interpretation.py ---
+    "tab_interpretation": "Interpretación",
     "interp_intro_1":       "El estudio se basa en una herramienta central de la ecología contemporánea: los modelos de distribución de especies (Species Distribution Models, SDM). En su forma más completa, los SDM integran múltiples dimensiones ecológicas (clima, dispersión, interacciones bióticas, genética), caracterizando dónde y por qué una especie se mantiene.",
     "interp_intro_2":       "Los mapas de distribución de las especies pirenaicas se construyen a partir de variables climáticas, especialmente precipitaciones y temperaturas. Resultan del cruce entre datos de presencia (inventarios de campo, especímenes de herbario, bases de datos en línea) y un conjunto de variables ambientales que caracterizan las condiciones de los sitios ocupados (véase tabla).",
     "interp_conclusion":    "Los modelos permiten definir las combinaciones climáticas asociadas a la presencia (o ausencia) de la especie, y por tanto los entornos donde es probable que se mantenga. Una vez establecido este retrato, es posible estudiar la evolución de estas condiciones bajo diferentes climas futuros para estimar dónde podría subsistir, migrar o desaparecer.",
@@ -165,4 +151,90 @@ TEXTES_ES: dict[str, str] = {
     "bio18_desc":"Precipitación total del trimestre más cálido",
     "bio19_nom": "Precipitación del trimestre más frío",
     "bio19_desc":"Precipitación total del trimestre más frío",
+
+    # --- tutorial.py ---
+
+    "tab_tutorial": "Tutorial",
+
+    "tutorial_sidebar_title": "Comprender la barra lateral",
+    "tutorial_sidebar_intro": (
+        "La barra lateral reúne todos los ajustes que controlan el mapa: "
+        "idioma, especie estudiada, período de proyección y escenario climático (SSP). "
+        "Cada elección modifica directamente el mapa mostrado en el centro de la pantalla."
+    ),
+    "tutorial_sidebar_lang": (
+        "En la parte superior, elija el idioma de la aplicación."
+    ),
+    "tutorial_sidebar_species": (
+        "A continuación, seleccione la especie estudiada en la lista desplegable. "
+        "El número de especies disponibles se indica justo encima."
+    ),
+    "tutorial_sidebar_period": (
+        "Elija el período de proyección (por ejemplo 2021–2040)."
+    ),
+    "tutorial_sidebar_ssp": (
+        "Después, seleccione un escenario climático (SSP 126, 245, 370 o 585). "
+        "Los botones de colores van del más optimista (verde) al más pesimista (rojo)."
+    ),
+    "tutorial_sidebar_mode": (
+        "Por último, el modo de visualización permite mostrar una probabilidad de presencia "
+        "continua o un mapa binarizado No favorable/Favorable."
+    ),
+
+
+    "tutorial_header_title": "Comprender los botones de acción",
+    "tutorial_header_intro": (
+        "En la parte superior de la página, dos botones permiten preparar e imprimir "
+        "fichas en formato PDF para la especie seleccionada."
+    ),
+    "tutorial_header_prepare_scenario": (
+        "Preparar la ficha de escenario: genera una ficha para la combinación "
+        "actual de período y escenario climático."
+    ),
+    "tutorial_header_prepare_full": (
+        "Preparar la ficha completa: genera una ficha que reúne todos los períodos "
+        "y los cuatro escenarios SSP para la especie elegida."
+    ),
+    "tutorial_header_tabs": (
+        "Las pestañas Mapa de distribución, Escenarios SSP, Interpretación y Tutorial "
+        "permiten pasar de una vista a otra de la herramienta."
+    ),
+
+
+    "tutorial_map_title": "Mapa base y opacidad",
+    "tutorial_map_intro": (
+        "El mapa interactivo muestra la predicción de presencia de la especie superpuesta "
+        "a un mapa base (en modo plano o satélite)."
+    ),
+    "tutorial_map_basemap": (
+        "Mapa base: elija Plano (mapa de carreteras detallado) o Satélite "
+        "para visualizar mejor el relieve y la ocupación del suelo."
+    ),
+    "tutorial_map_opacity": (
+        "Opacidad de la predicción: el control deslizante ajusta la transparencia de la capa "
+        "de predicción. Una opacidad baja deja ver más el mapa base, una opacidad alta resalta "
+        "las zonas favorables o desfavorables."
+    ),
+    "tutorial_map_recentre": (
+        "Recentrar en los Pirineos: recentra automáticamente el mapa sobre toda la cordillera."
+    ),
+
+
+    "tutorial_export_title": "Descargar el mapa seleccionado",
+    "tutorial_export_intro": (
+        "Una vez mostrado el mapa (especie, período, escenario y modo de visualización elegidos), "
+        "puede exportarlo en varios formatos."
+    ),
+    "tutorial_export_png": (
+        "PNG: imagen de buena calidad, adecuada para la visualización en pantalla o en diapositivas."
+    ),
+    "tutorial_export_jpg": (
+        "JPG: imagen comprimida, útil para archivos más ligeros (web, correos, etc.)."
+    ),
+    "tutorial_export_pdf": (
+        "PDF: documento práctico para la impresión o la inclusión en informes."
+    ),
+    "tutorial_export_tif": (
+        "TIF: archivo ráster georreferenciado para su uso en programas SIG (QGIS, etc.)."
+    ),
 }

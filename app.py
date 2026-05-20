@@ -17,7 +17,7 @@ from ui.sidebar import render_sidebar
 from ui.ssp_info import render_ssp_info
 from ui.interpretation import render_interpretation
 from core.translations import init_langue, t
-from ui.onboarding import render_onboarding
+from ui.tutorial import render_tutorial
 
 
 
@@ -135,7 +135,7 @@ def main() -> None:
                     generer_pdf_espece_complet(espece, mode_visu, fond=fond_actuel, opacite=opacite_actuelle)
                     st.rerun()
 
-    tab_carte, tab_ssp, tab_interp = st.tabs([t("tab_carte"), t("tab_ssp"), "Interprétation"])
+    tab_carte, tab_ssp, tab_interp, tab_tutorial = st.tabs([t("tab_carte"), t("tab_ssp"), t("tab_interpretation"), t("tab_tutorial")])
 
     with tab_carte:
         render_map_section(espece, periode_label, periode_cle, ssp_choisi, mode_visu)
@@ -143,6 +143,8 @@ def main() -> None:
         render_ssp_info()
     with tab_interp:
         render_interpretation()
+    with tab_tutorial:
+        render_tutorial()
 
 
 if __name__ == "__main__":
