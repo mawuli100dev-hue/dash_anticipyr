@@ -1,4 +1,3 @@
-# ui\app_style.py
 from __future__ import annotations
 
 import streamlit as st
@@ -191,6 +190,17 @@ def inject_styles() -> None:
                 text-overflow: ellipsis;
                 min-width: 0;
             }}
+
+            /* ======================================================= */
+            /* SOLUTION : Cache le badge "Hosted with Streamlit"       */
+            /* ======================================================= */
+            div[class^="viewerBadge_container"], 
+            div[class^="viewerBadge_link"],
+            a[href*="streamlit.io/cloud"] {{
+                display: none !important;
+            }}
+            /* ======================================================= */
+
         </style>
 
         <div class="sidebar-toggle-label">{toggle_label}</div>
