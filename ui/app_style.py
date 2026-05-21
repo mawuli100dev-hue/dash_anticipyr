@@ -22,19 +22,12 @@ def inject_styles() -> None:
                 visibility: hidden;
             }}
 
-            /* Cache aussi certains éléments flottants Streamlit */
-            [data-testid="stToolbar"] {{
-                display: none;
-            }}
-
             [data-testid="stDecoration"] {{
                 display: none;
             }}
 
             [data-testid="stStatusWidget"] {{
-                visibility: hidden;
-                height: 0%;
-                position: fixed;
+                 display: none !important;
             }}
 
             /* Sous-titre */
@@ -182,10 +175,6 @@ def inject_styles() -> None:
                 }}
 
                 [data-testid="stDecoration"] {{
-                    display: none !important;
-                }}
-
-                [data-testid="stToolbar"] {{
                     display: none !important;
                 }}
 
