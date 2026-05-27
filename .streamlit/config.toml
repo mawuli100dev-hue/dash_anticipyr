@@ -3,3 +3,7 @@
 [theme]
 base = "light"
 primaryColor = "#1b5e35"
+
+[server]
+runOnSave = true
+fileWatcherType = "poll"

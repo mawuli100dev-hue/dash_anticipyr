@@ -1,4 +1,4 @@
-# ui\sidebar.py
+# ui/sidebar.py
 from __future__ import annotations
 
 import base64
@@ -10,6 +10,23 @@ from core.constants import PERIODES, SSP_LIST
 from core.raster import lister_especes
 from core.translations import init_langue, t
 from ui.sidebar_style import inject_sidebar_styles
+
+from ui.configuration_style import (
+    COULEUR_PRINCIPALE,
+    COULEUR_PRINCIPALE_CLAIRE,
+    COULEUR_BORDURE,
+    COULEUR_TEXTE_STANDARD,
+    COULEUR_TEXTE_DISCRET,
+    COULEUR_TEXTE_FOOTER,
+    TAILLE_TITRE_SIDEBAR,
+    TAILLE_SOUS_TITRE_SIDEBAR,
+    TAILLE_LABEL_SIDEBAR,
+    TAILLE_TEXTE_ESPECE,
+    TAILLE_FOOTER_SIDEBAR,
+    TAILLE_REFS_FOOTER,
+    LOGO_HAUTEUR_MAX,
+    POLICE_PRINCIPALE,
+)
 
 
 _FLAGS_DIR = Path(__file__).resolve().parent.parent / "data" / "flags"
@@ -31,6 +48,12 @@ _LANGUE_LABELS = {
 }
 
 
+def _css_font(police: str) -> str:
+    if not police or police.lower() == "inherit":
+        return ""
+    return f"font-family: '{police}', sans-serif;"
+
+
 def _lire_drapeau_b64(code: str) -> str:
     chemin = _FLAGS_DIR / f"{code}.png"
     if not chemin.exists():
@@ -50,8 +73,8 @@ def _render_selecteur_langue() -> None:
             f"""
             <div style="display:flex;align-items:center;gap:7px;margin-bottom:4px;">
                 <div style="display:inline-flex;align-items:center;justify-content:center;
-                    background:#f0faf3;border:1px solid #d1fae5;border-radius:6px;
-                    padding:3px 7px 3px 5px;gap:6px;">
+                    background:{COULEUR_PRINCIPALE_CLAIRE};border:1px solid #d1fae5;
+                    border-radius:6px;padding:3px 7px 3px 5px;gap:6px;">
                     <img src="data:image/png;base64,{b64}"
                          width="24" height="16"
                          style="border-radius:3px;object-fit:cover;display:block;flex-shrink:0;"
@@ -98,23 +121,27 @@ def render_sidebar() -> tuple[str, str, str, str | None, str]:
 
     inject_sidebar_styles(ssp_actif=st.session_state.ssp_choisi)
 
+    _font = _css_font(POLICE_PRINCIPALE)
+
     with st.sidebar:
 
         _render_selecteur_langue()
 
         st.markdown(
-            "<hr style='margin: 4px 0 8px 0; border: none; "
-            "border-top: 1px solid #e5e7eb;' />",
+            f"<hr style='margin: 4px 0 8px 0; border: none; "
+            f"border-top: 1px solid {COULEUR_BORDURE};' />",
             unsafe_allow_html=True,
         )
 
         st.markdown(
             f"""
-            <div style="padding:8px 8px 8px 8px; margin-bottom:4px;">
-                <p style="font-size:1.2rem;font-weight:700;color:#1b5e35;margin:0;">
+            <div style="padding:8px 8px 8px 8px; margin-bottom:4px; {_font}">
+                <p style="font-size:{TAILLE_TITRE_SIDEBAR};font-weight:700;
+                          color:{COULEUR_PRINCIPALE};margin:0;{_font}">
                     {t("sidebar_titre")}
                 </p>
-                <p style="font-size:0.78rem;color:#9ca3af;margin:2px 0 0 0;">
+                <p style="font-size:{TAILLE_SOUS_TITRE_SIDEBAR};color:{COULEUR_TEXTE_FOOTER};
+                          margin:2px 0 0 0;{_font}">
                     {t("sidebar_sous_titre")}
                 </p>
             </div>
@@ -124,7 +151,8 @@ def render_sidebar() -> tuple[str, str, str, str | None, str]:
         st.divider()
 
         st.markdown(
-            f"<p style='font-size:0.82rem;font-weight:600;color:#374151;margin-bottom:4px;'>"
+            f"<p style='font-size:{TAILLE_LABEL_SIDEBAR};font-weight:600;"
+            f"color:{COULEUR_TEXTE_STANDARD};margin-bottom:4px;{_font}'>"
             f"{t('sidebar_espece_label')}</p>",
             unsafe_allow_html=True,
         )
@@ -137,16 +165,13 @@ def render_sidebar() -> tuple[str, str, str, str | None, str]:
 
         st.caption(t("sidebar_espece_caption", n=len(especes)))
 
-        especes_options = [""] + especes
-
         if "espece_selectionnee" not in st.session_state:
-            st.session_state.espece_selectionnee = especes[0]
+            st.session_state["espece_selectionnee"] = especes[0]
 
-        index = (
-            especes_options.index(st.session_state.espece_selectionnee)
-            if st.session_state.espece_selectionnee in especes
-            else 1
-        )
+        if st.session_state["espece_selectionnee"] not in especes:
+            st.session_state["espece_selectionnee"] = especes[0]
+
+        especes_options = [""] + especes
 
         col_icon, col_select = st.columns([1, 9])
 
@@ -171,7 +196,6 @@ def render_sidebar() -> tuple[str, str, str, str | None, str]:
             espece = st.selectbox(
                 t("sidebar_espece_label"),
                 options=especes_options,
-                index=index,
                 key="espece_selectionnee",
                 help=t("sidebar_espece_help"),
                 label_visibility="collapsed",
@@ -182,14 +206,15 @@ def render_sidebar() -> tuple[str, str, str, str | None, str]:
             st.stop()
 
         st.markdown(
-            f"<p style='font-size:0.78rem;color:#6b7280;font-style:italic;margin-top:2px;'>"
-            f"{espece}</p>",
+            f"<p style='font-size:{TAILLE_TEXTE_ESPECE};color:{COULEUR_TEXTE_DISCRET};"
+            f"font-style:italic;margin-top:2px;{_font}'>{espece}</p>",
             unsafe_allow_html=True,
         )
         st.divider()
 
         st.markdown(
-            f"<p style='font-size:0.82rem;font-weight:600;color:#374151;margin-bottom:4px;'>"
+            f"<p style='font-size:{TAILLE_LABEL_SIDEBAR};font-weight:600;"
+            f"color:{COULEUR_TEXTE_STANDARD};margin-bottom:4px;{_font}'>"
             f"{t('sidebar_periode_label')}</p>",
             unsafe_allow_html=True,
         )
@@ -204,8 +229,11 @@ def render_sidebar() -> tuple[str, str, str, str | None, str]:
         if periode_cle == "current":
             st.markdown(
                 f"""
-                <div style="background-color:#f0faf3;border-left:4px solid #1b5e35;
-                    border-radius:4px;padding:10px 12px;font-size:0.82rem;color:#374151;">
+                <div style="background-color:{COULEUR_PRINCIPALE_CLAIRE};
+                    border-left:4px solid {COULEUR_PRINCIPALE};
+                    border-radius:4px;padding:10px 12px;
+                    font-size:{TAILLE_LABEL_SIDEBAR};
+                    color:{COULEUR_TEXTE_STANDARD};{_font}">
                     {t("sidebar_current_info")}
                 </div>
                 """,
@@ -214,7 +242,8 @@ def render_sidebar() -> tuple[str, str, str, str | None, str]:
             ssp_choisi = None
         else:
             st.markdown(
-                f"<p style='font-size:0.82rem;font-weight:600;color:#374151;margin-bottom:6px;'>"
+                f"<p style='font-size:{TAILLE_LABEL_SIDEBAR};font-weight:600;"
+                f"color:{COULEUR_TEXTE_STANDARD};margin-bottom:6px;{_font}'>"
                 f"{t('sidebar_ssp_label')}</p>",
                 unsafe_allow_html=True,
             )
@@ -252,7 +281,8 @@ def render_sidebar() -> tuple[str, str, str, str | None, str]:
         st.divider()
 
         st.markdown(
-            f"<p style='font-size:0.82rem;font-weight:600;color:#374151;margin-bottom:4px;'>"
+            f"<p style='font-size:{TAILLE_LABEL_SIDEBAR};font-weight:600;"
+            f"color:{COULEUR_TEXTE_STANDARD};margin-bottom:4px;{_font}'>"
             f"{t('sidebar_mode_label')}</p>",
             unsafe_allow_html=True,
         )
@@ -269,18 +299,12 @@ def render_sidebar() -> tuple[str, str, str, str | None, str]:
         st.session_state["mode_visu"] = mode_selectionne
         mode_visu = mode_selectionne
 
-
-
-        # if st.button("Revoir le guide", key="btn_revoir_guide"):
-        #     st.session_state["_onboarding_done"] = False
-        #     st.session_state["_onboarding_step"] = 0
-        #     st.rerun()
-
         st.divider()
 
         st.markdown(
             f"""
-            <div style="font-size:0.72rem;color:#9ca3af;text-align:center;padding:8px 0 4px 0;">
+            <div style="font-size:{TAILLE_FOOTER_SIDEBAR};color:{COULEUR_TEXTE_FOOTER};
+                        text-align:center;padding:8px 0 4px 0;{_font}">
                 {t("sidebar_footer")}
             </div>
             """,
@@ -289,10 +313,11 @@ def render_sidebar() -> tuple[str, str, str, str | None, str]:
 
         st.markdown(
             f"""
-            <div style="font-size:0.70rem;color:#9ca3af;padding:6px 0 4px 0;
-                        border-top:1px solid #e5e7eb;margin-top:4px;">
+            <div style="font-size:{TAILLE_REFS_FOOTER};color:{COULEUR_TEXTE_FOOTER};
+                        padding:6px 0 4px 0;border-top:1px solid {COULEUR_BORDURE};
+                        margin-top:4px;{_font}">
                 {t('ssp_ref_article')} <a href="{ARTICLE_URL}" target="_blank"
-                style="color:#6b7280;word-break:break-all;">{ARTICLE_URL}</a><br>
+                style="color:{COULEUR_TEXTE_DISCRET};word-break:break-all;">{ARTICLE_URL}</a><br>
                 {t('ssp_ref_auteurs')} {" · ".join(AUTHORS)}<br>
                 {t('ssp_ref_dashboard')} Ayi AMAVIGAN
             </div>
@@ -305,8 +330,8 @@ def render_sidebar() -> tuple[str, str, str, str | None, str]:
 
         if logos:
             st.markdown(
-                "<hr style='margin: 6px 0 8px 0; border: none; "
-                "border-top: 1px solid #e5e7eb;' />",
+                f"<hr style='margin: 6px 0 8px 0; border: none; "
+                f"border-top: 1px solid {COULEUR_BORDURE};' />",
                 unsafe_allow_html=True,
             )
             for i in range(0, len(logos), 3):
@@ -316,8 +341,8 @@ def render_sidebar() -> tuple[str, str, str, str | None, str]:
                         b64 = base64.b64encode(f.read()).decode("utf-8")
                     with col:
                         st.markdown(
-                            f'<img src="data:image/png;base64,{b64}" '
-                            f'style="width:100%;max-height:56px;object-fit:contain;" '
+                            f'<img src="data:image/png;base64,{b64}" ' 
+                            f'style="width:100%;max-height:{LOGO_HAUTEUR_MAX};object-fit:contain; !important" '
                             f'alt="{logo_path.stem}" />',
                             unsafe_allow_html=True,
                         )

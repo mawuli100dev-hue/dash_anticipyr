@@ -1,131 +1,75 @@
-# ui\sidebar_style.py
+# ui/sidebar_style.py
 from __future__ import annotations
 
 import streamlit as st
 
+from ui.configuration_style import (
+    COULEUR_PRINCIPALE,
+    COULEUR_PRINCIPALE_CLAIRE,
+    COULEUR_BORDURE,
+    SSP_COULEURS,
+    SSP_COULEURS_TEXTE,
+    TAILLE_BOUTON_SSP,
+    SSP_BOUTON_RADIUS,
+    SSP_BOUTON_HAUTEUR_MIN,
+    SSP_BOUTON_EPAISSEUR_BORDURE,
+    POLICE_PRINCIPALE,
+)
 
-VERT = "#1b5e35"
-
-SSP_COULEURS = {
-    "SSP 126": "#2e7d32",
-    "SSP 245": "#f9a825",
-    "SSP 370": "#e65100",
-    "SSP 585": "#b71c1c",
-}
-
-_SSP_TEXTE = {
-    "SSP 126": "#ffffff",
-    "SSP 245": "#1a1a1a",
-    "SSP 370": "#ffffff",
-    "SSP 585": "#ffffff",
-}
+VERT = COULEUR_PRINCIPALE
+_SSP_TEXTE = SSP_COULEURS_TEXTE
 
 
-# DROPDOWN_CSS conservé pour usage éventuel ailleurs, mais n'est plus
-# utilisé par le sélecteur de langue (remplacé par st.selectbox natif).
+def _css_font(police: str) -> str:
+    if not police or police.lower() == "inherit":
+        return ""
+    return f"font-family: \'{police}\', sans-serif !important;"
+
+
+# DROPDOWN_CSS conservé pour usage éventuel ailleurs
 DROPDOWN_CSS = """
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-        background: transparent;
-        overflow: hidden;
-    }
-
-    .dropdown {
-        position: relative;
-        width: 100%;
-        user-select: none;
-    }
-
+    body { background: transparent; overflow: hidden; }
+    .dropdown { position: relative; width: 100%; user-select: none; }
     .sel {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 6px 28px 6px 9px;
-        background: #f8faf9;
-        border: 1px solid #d1d5db;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 0.82rem;
-        color: #374151;
+        display: flex; align-items: center; gap: 8px;
+        padding: 6px 28px 6px 9px; background: #f8faf9;
+        border: 1px solid #d1d5db; border-radius: 6px; cursor: pointer;
+        font-size: 0.82rem; color: #374151;
         transition: border-color 0.15s ease, box-shadow 0.15s ease;
     }
-
-    .sel:hover {
-        border-color: #1b5e35;
-    }
-
+    .sel:hover { border-color: #1b5e35; }
     .sel.open {
-        border-color: #1b5e35;
-        box-shadow: 0 0 0 2px rgba(27,94,53,0.18);
-        border-bottom-left-radius: 0;
-        border-bottom-right-radius: 0;
+        border-color: #1b5e35; box-shadow: 0 0 0 2px rgba(27,94,53,0.18);
+        border-bottom-left-radius: 0; border-bottom-right-radius: 0;
     }
-
     .arrow {
-        position: absolute;
-        right: 9px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #6b7280;
-        font-size: 10px;
-        pointer-events: none;
+        position: absolute; right: 9px; top: 50%; transform: translateY(-50%);
+        color: #6b7280; font-size: 10px; pointer-events: none;
         transition: transform 0.15s ease;
     }
-
-    .sel.open ~ .arrow {
-        transform: translateY(-50%) rotate(180deg);
-    }
-
+    .sel.open ~ .arrow { transform: translateY(-50%) rotate(180deg); }
     .menu {
-        display: none;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        background: #ffffff;
-        border: 1px solid #1b5e35;
-        border-top: none;
-        border-bottom-left-radius: 6px;
-        border-bottom-right-radius: 6px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.10);
-        z-index: 999;
-        overflow: hidden;
+        display: none; position: absolute; top: 100%; left: 0; right: 0;
+        background: #ffffff; border: 1px solid #1b5e35; border-top: none;
+        border-bottom-left-radius: 6px; border-bottom-right-radius: 6px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.10); z-index: 999; overflow: hidden;
     }
-
-    .menu.visible {
-        display: block;
-    }
-
+    .menu.visible { display: block; }
     .option {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 7px 10px;
-        font-size: 0.82rem;
-        color: #374151;
-        cursor: pointer;
+        display: flex; align-items: center; gap: 8px; padding: 7px 10px;
+        font-size: 0.82rem; color: #374151; cursor: pointer;
         transition: background 0.1s ease;
     }
-
-    .option:hover {
-        background: #f0faf3;
-        color: #1b5e35;
-    }
-
-    .option-active {
-        background: #e8f5e9;
-        color: #1b5e35;
-        font-weight: 600;
-    }
-
-    #sel-label {
-        flex: 1;
-    }
+    .option:hover { background: #f0faf3; color: #1b5e35; }
+    .option-active { background: #e8f5e9; color: #1b5e35; font-weight: 600; }
+    #sel-label { flex: 1; }
 """
 
 
 def inject_sidebar_styles(ssp_actif: str | None = None) -> None:
+
+    css_police = _css_font(POLICE_PRINCIPALE)
 
     regles_ssp = ""
     for ssp, couleur in SSP_COULEURS.items():
@@ -140,20 +84,21 @@ def inject_sidebar_styles(ssp_actif: str | None = None) -> None:
         regles_ssp += f"""
             div[data-testid="stColumn"]:has(#{ancre_id}) button {{
                 background-color: {bg} !important;
-                border: 2px solid {couleur} !important;
+                border: {SSP_BOUTON_EPAISSEUR_BORDURE} solid {couleur} !important;
                 color: {texte} !important;
                 font-weight: {poids} !important;
                 box-shadow: {ombre} !important;
-                border-radius: 8px !important;
+                border-radius: {SSP_BOUTON_RADIUS} !important;
                 padding: 8px 4px !important;
-                min-height: 56px !important;
+                min-height: {SSP_BOUTON_HAUTEUR_MIN}px !important;
                 width: 100% !important;
-                font-size: 0.82rem !important;
+                font-size: {TAILLE_BOUTON_SSP} !important;
                 line-height: 1.35 !important;
                 white-space: pre-line !important;
                 transition: opacity 0.15s ease !important;
                 cursor: pointer !important;
                 pointer-events: auto !important;
+                {css_police}
             }}
             div[data-testid="stColumn"]:has(#{ancre_id}) button p {{
                 color: {texte} !important;
@@ -164,18 +109,19 @@ def inject_sidebar_styles(ssp_actif: str | None = None) -> None:
             }}
             button.ssp-btn-{slug} {{
                 background-color: {bg} !important;
-                border: 2px solid {couleur} !important;
+                border: {SSP_BOUTON_EPAISSEUR_BORDURE} solid {couleur} !important;
                 color: {texte} !important;
                 font-weight: {poids} !important;
                 box-shadow: {ombre} !important;
-                border-radius: 8px !important;
+                border-radius: {SSP_BOUTON_RADIUS} !important;
                 padding: 8px 4px !important;
-                min-height: 56px !important;
-                font-size: 0.82rem !important;
+                min-height: {SSP_BOUTON_HAUTEUR_MIN}px !important;
+                font-size: {TAILLE_BOUTON_SSP} !important;
                 line-height: 1.35 !important;
                 white-space: pre-line !important;
                 cursor: pointer !important;
                 pointer-events: auto !important;
+                {css_police}
             }}
             button.ssp-btn-{slug} p {{
                 color: {texte} !important;
@@ -197,15 +143,18 @@ def inject_sidebar_styles(ssp_actif: str | None = None) -> None:
         <style>
             [data-testid="stSidebar"] {{
                 background-color: #f8faf9;
-                border-right: 1px solid #e5e7eb;
+                border-right: 1px solid {COULEUR_BORDURE};
+            }}
+
+            [data-testid="stSidebar"] * {{
+                {css_police}
             }}
 
             [data-testid="stSidebar"] hr {{
-                border-color: #e5e7eb !important;
+                border-color: {COULEUR_BORDURE} !important;
                 margin: 8px 0 !important;
             }}
 
-            /* Supprime la marge basse sous le selectbox langue (1er selectbox) */
             [data-testid="stSidebar"] [data-testid="stSelectbox"]:first-of-type {{
                 margin-bottom: 0 !important;
             }}
@@ -216,7 +165,6 @@ def inject_sidebar_styles(ssp_actif: str | None = None) -> None:
                 padding-bottom: 0 !important;
             }}
 
-            /* Supprime le padding-bottom du bloc stElementContainer autour du selectbox langue */
             [data-testid="stSidebar"] [data-testid="stElementContainer"]:has(
                 [data-testid="stSelectbox"]:first-of-type
             ) {{
@@ -250,10 +198,10 @@ def inject_sidebar_styles(ssp_actif: str | None = None) -> None:
                 max-width: 28px !important;
             }}
 
-            /* Style italic pour tous les selectbox de la sidebar */
             [data-testid="stSidebar"] [data-testid="stSelectbox"]
             [data-baseweb="select"] * {{
                 font-style: italic !important;
+                {css_police}
             }}
 
             [data-baseweb="popover"] [role="option"] *,
@@ -261,10 +209,12 @@ def inject_sidebar_styles(ssp_actif: str | None = None) -> None:
             ul[role="listbox"] li,
             ul[role="listbox"] li * {{
                 font-style: italic !important;
+                {css_police}
             }}
 
             [data-testid="stSidebar"] [data-testid="stSelectbox"] input {{
                 font-style: italic !important;
+                {css_police}
             }}
 
             {regles_ssp}
