@@ -30,13 +30,13 @@
 
 # Police principale : corps du texte, labels, boutons, sidebar
 #       "Roboto", "Open Sans", "Lato", "Nunito", "Poppins",
-POLICE_PRINCIPALE = ""
+POLICE_PRINCIPALE = "Times New Roman"
 
 # Police des titres : header principal, titres de section
-POLICE_TITRES = ""
+POLICE_TITRES = "Times New Roman"
 
 # Police des onglets
-POLICE_ONGLETS = ""
+POLICE_ONGLETS = "Times New Roman"
 
 # Pour désactiver une police personnalisée et revenir au défaut Streamlit,
 # remplacez sa valeur par : "inherit"
