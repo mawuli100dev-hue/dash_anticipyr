@@ -1,4 +1,6 @@
+# core/raster.py
 from __future__ import annotations
+from shapely.validation import make_valid
 
 import io
 import os
@@ -124,12 +126,20 @@ def charger_raster(cle_b2: str) -> Tuple[np.ndarray, rasterio.coords.BoundingBox
 # Utilitaire shapefile Pyrénées (inchangé)
 # ---------------------------------------------------------------------------
 
+
 @st.cache_data
 def _charger_geometries_pyrenees() -> list:
     if not SHAPEFILE_PYRENEES.exists():
         return []
     with fiona.open(str(SHAPEFILE_PYRENEES)) as src:
-        return [shape(feat["geometry"]) for feat in src]
+        geoms = [shape(feat["geometry"]) for feat in src]
+    geoms_valides = []
+    for g in geoms:
+        if not g.is_valid:
+            g = make_valid(g)
+        if not g.is_empty:
+            geoms_valides.append(g)
+    return geoms_valides
 
 
 # ---------------------------------------------------------------------------
