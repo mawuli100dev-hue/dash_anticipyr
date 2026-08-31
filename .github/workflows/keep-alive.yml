@@ -1,23 +1,54 @@
+# .github/workflows/keep_alive.yml
+#
+# Remplace le commit vide par un vrai "ping" de l'application Streamlit.
+# 1. Tente un simple appel HTTP (rapide, suffisant si l'app est encore éveillée).
+# 2. Si l'app renvoie la page "Zzzz" (en sommeil), lance un navigateur headless
+#    (Playwright) pour visiter la page et cliquer sur le bouton de réveil.
+#
+# Pensez à remplacer APP_URL par l'URL réelle de votre app Streamlit.
+
 name: Keep Alive
 
 on:
   schedule:
-    - cron: "0 */10 * * *"
+    - cron: "0 */6 * * *" # toutes les 6h (plus fréquent = plus sûr)
   workflow_dispatch:
 
-jobs:
-  empty-commit:
-    runs-on: ubuntu-latest
+env:
+  APP_URL: "https://dashanticipyr-rdfsittsujgfzbkbd5hxk8.streamlit.app/"
 
+jobs:
+  ping:
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           ref: version-2
 
-      - name: Create empty commit
+      - name: Ping HTTP simple
+        id: http_ping
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git commit --allow-empty -m "keep alive"
-          git push origin version-2
+          STATUS=$(curl -s -o response.html -w "%{http_code}" "$APP_URL")
+          echo "status=$STATUS" >> "$GITHUB_OUTPUT"
+          if grep -qi "Zzzz" response.html; then
+            echo "asleep=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "asleep=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Setup Python
+        if: steps.http_ping.outputs.asleep == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Installer Playwright
+        if: steps.http_ping.outputs.asleep == 'true'
+        run: |
+          pip install playwright
+          playwright install --with-deps chromium
+
+      - name: Reveiller l'app (clic sur le bouton)
+        if: steps.http_ping.outputs.asleep == 'true'
+        run: python scripts/wake_streamlit.py
