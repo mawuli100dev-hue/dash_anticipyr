@@ -1,11 +1,11 @@
 # .github/workflows/keep_alive.yml
 #
-# Remplace le commit vide par un vrai "ping" de l'application Streamlit.
-# 1. Tente un simple appel HTTP (rapide, suffisant si l'app est encore éveillée).
-# 2. Si l'app renvoie la page "Zzzz" (en sommeil), lance un navigateur headless
+# Remplace le commit vide par un vrai "ping" des applications Streamlit.
+# 1. Tente un simple appel HTTP pour chaque app (rapide, suffisant si l'app est encore éveillée).
+# 2. Si une app renvoie la page "Zzzz" (en sommeil), lance un navigateur headless
 #    (Playwright) pour visiter la page et cliquer sur le bouton de réveil.
 #
-# Pensez à remplacer APP_URL par l'URL réelle de votre app Streamlit.
+# Pensez à ajuster APP_URLS si vous ajoutez/retirez des apps.
 
 name: Keep Alive
 
@@ -15,7 +15,9 @@ on:
   workflow_dispatch:
 
 env:
-  APP_URL: "https://dashanticipyr-rdfsittsujgfzbkbd5hxk8.streamlit.app/"
+  APP_URLS: >-
+    https://dashanticipyr-rdfsittsujgfzbkbd5hxk8.streamlit.app/
+    https://dashanticipyr-gestion-especes.streamlit.app/
 
 jobs:
   ping:
@@ -26,12 +28,24 @@ jobs:
         with:
           ref: version-2
 
-      - name: Ping HTTP simple
+      - name: Ping HTTP simple pour chaque app
         id: http_ping
         run: |
-          STATUS=$(curl -s -o response.html -w "%{http_code}" "$APP_URL")
-          echo "status=$STATUS" >> "$GITHUB_OUTPUT"
-          if grep -qi "Zzzz" response.html; then
+          ASLEEP_URLS=""
+          for url in $APP_URLS; do
+            echo "Ping de $url"
+            STATUS=$(curl -s -o response.html -w "%{http_code}" "$url")
+            echo "  -> status=$STATUS"
+            if grep -qi "Zzzz" response.html; then
+              echo "  -> endormie"
+              ASLEEP_URLS="$ASLEEP_URLS $url"
+            else
+              echo "  -> active"
+            fi
+          done
+          ASLEEP_URLS=$(echo "$ASLEEP_URLS" | xargs)
+          echo "asleep_urls=$ASLEEP_URLS" >> "$GITHUB_OUTPUT"
+          if [ -n "$ASLEEP_URLS" ]; then
             echo "asleep=true" >> "$GITHUB_OUTPUT"
           else
             echo "asleep=false" >> "$GITHUB_OUTPUT"
@@ -49,6 +63,6 @@ jobs:
           pip install playwright
           playwright install --with-deps chromium
 
-      - name: Reveiller l'app (clic sur le bouton)
+      - name: Reveiller les apps endormies (clic sur le bouton)
         if: steps.http_ping.outputs.asleep == 'true'
-        run: python scripts/wake_streamlit.py
+        run: python scripts/wake_streamlit.py ${{ steps.http_ping.outputs.asleep_urls }}
